@@ -1,0 +1,44 @@
+{
+  "name": "mcp-sgp",
+  "version": "0.1.0",
+  "description": "MCP Server para integração com SGP (Sistema de Gestão de Provedores)",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "wrangler d1 migrations apply mcp-sgp-db",
+    "db:migrate:local": "wrangler d1 migrations apply mcp-sgp-db --local",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "hono": "^4.6.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241205.0",
+    "@cloudflare/vitest-pool-workers": "^0.5.0",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "wrangler": "^3.99.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "cloudflare",
+    "workers",
+    "sgp",
+    "isp",
+    "erp"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,71 @@
+# MCP Server SGP - Cloudflare Workers Configuration
+name = "mcp-sgp"
+main = "src/index.ts"
+compatibility_date = "2024-12-05"
+compatibility_flags = ["nodejs_compat"]
+
+# Configurações de desenvolvimento
+[dev]
+port = 8787
+local_protocol = "http"
+
+# Variáveis de ambiente (valores de exemplo - usar secrets em produção)
+[vars]
+ENVIRONMENT = "development"
+SGP_API_VERSION = "v1"
+LOG_LEVEL = "debug"
+
+# Cloudflare D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "mcp-sgp-db"
+database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  # Substituir após criar
+migrations_dir = "src/db/migrations"
+
+# Cloudflare KV Namespace (cache e sessões)
+[[kv_namespaces]]
+binding = "KV"
+id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Substituir após criar
+
+# Cloudflare R2 Bucket (storage de arquivos)
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "mcp-sgp-storage"
+
+# Cloudflare Queues (processamento assíncrono)
+[[queues.producers]]
+binding = "QUEUE"
+queue = "mcp-sgp-tasks"
+
+[[queues.consumers]]
+queue = "mcp-sgp-tasks"
+max_batch_size = 10
+max_batch_timeout = 30
+
+# Durable Objects (estado persistente para conexões MCP)
+[[durable_objects.bindings]]
+name = "MCP_SESSION"
+class_name = "McpSessionDO"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["McpSessionDO"]
+
+# Hyperdrive (conexão otimizada com banco externo do SGP)
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Substituir após criar
+
+# Rate limiting
+# [[unsafe.bindings]]
+# name = "RATE_LIMITER"
+# type = "ratelimit"
+# namespace_id = "1"
+# simple = { limit = 100, period = 60 }
+
+# Configurações de produção
+[env.production]
+vars = { ENVIRONMENT = "production", LOG_LEVEL = "info" }
+
+[env.staging]
+vars = { ENVIRONMENT = "staging", LOG_LEVEL = "debug" }
