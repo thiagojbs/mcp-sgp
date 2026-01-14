@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SGP MCP Server - Documentação e Playground</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+  <style>
+    :root {
+      --primary: #f6821f;
+      --primary-dark: #e5720e;
+      --secondary: #1a1a2e;
+      --bg: #0f0f1a;
+      --card-bg: #1a1a2e;
+      --text: #e0e0e0;
+      --text-muted: #888;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --border: #2a2a3e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 0;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 48px;
+    }
+
+    .header-text h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, var(--primary), #ff9f43);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-text p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--success);
+      border-radius: 20px;
+      color: var(--success);
+      font-size: 0.9rem;
+      margin-top: 15px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Navigation */
+    nav {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      padding: 15px 0;
+      overflow-x: auto;
+    }
+
+    .nav-link {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* Main */
+    main {
+      padding: 40px 0;
+    }
+
+    section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      margin: 25px 0 15px;
+      color: var(--text);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    /* Code blocks */
+    pre, code {
+      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+      background: #0a0a12;
+      border-radius: 8px;
+    }
+
+    pre {
+      padding: 20px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      margin: 15px 0;
+    }
+
+    code {
+      padding: 2px 6px;
+      font-size: 0.9em;
+    }
+
+    .code-block {
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      background: var(--border);
+      border: none;
+      border-radius: 4px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+    }
+
+    /* Tools list */
+    .tools-category {
+      margin-bottom: 30px;
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px;
+      background: var(--secondary);
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+    }
+
+    .category-header:hover {
+      background: #252540;
+    }
+
+    .category-icon {
+      font-size: 1.5rem;
+    }
+
+    .category-title {
+      flex: 1;
+      font-weight: 600;
+    }
+
+    .category-count {
+      background: var(--primary);
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+
+    .tools-list {
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .tool-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .tool-item:last-child {
+      border-bottom: none;
+    }
+
+    .tool-item:hover {
+      background: rgba(246, 130, 31, 0.1);
+    }
+
+    .tool-name {
+      font-family: monospace;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .tool-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+
+    /* Playground */
+    .playground-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .playground-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .playground-section h3 {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    textarea {
+      min-height: 150px;
+      font-family: monospace;
+      resize: vertical;
+    }
+
+    button {
+      padding: 12px 24px;
+      background: var(--primary);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button:disabled {
+      background: var(--border);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #252540;
+    }
+
+    .response-area {
+      background: #0a0a12;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 300px;
+      max-height: 500px;
+      overflow: auto;
+      font-family: monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .response-success {
+      border-color: var(--success);
+    }
+
+    .response-error {
+      border-color: var(--error);
+    }
+
+    /* Endpoints table */
+    .endpoints-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    .endpoints-table th,
+    .endpoints-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .endpoints-table th {
+      background: var(--secondary);
+      color: var(--primary);
+    }
+
+    .endpoints-table tr:hover td {
+      background: rgba(246, 130, 31, 0.05);
+    }
+
+    .method-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .method-get { background: #10b98133; color: #10b981; }
+    .method-post { background: #3b82f633; color: #3b82f6; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 30px 0;
+      margin-top: 40px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">🔌</div>
+        <div class="header-text">
+          <h1>SGP MCP Server</h1>
+          <p>Model Context Protocol Server para integração com o ERP SGP</p>
+          <div class="status-badge">
+            <span class="status-dot"></span>
+            <span>Online - Multi-Tenant</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="container">
+      <div class="nav-links">
+        <a class="nav-link active" data-section="overview">📊 Visão Geral</a>
+        <a class="nav-link" data-section="quickstart">🚀 Início Rápido</a>
+        <a class="nav-link" data-section="tools">🔧 Ferramentas</a>
+        <a class="nav-link" data-section="playground">🧪 Playground</a>
+        <a class="nav-link" data-section="api">📡 API</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Overview Section -->
+    <section id="overview" class="active">
+      <h2>Visão Geral</h2>
+
+      <div class="card-grid">
+        <div class="card stat-card">
+          <div class="stat-number" id="tools-count">52</div>
+          <div class="stat-label">Ferramentas Disponíveis</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-number">8</div>
+          <div class="stat-label">Categorias</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">SGPs Suportados</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>O que é o SGP MCP Server?</h3>
+        <p>Um servidor MCP (Model Context Protocol) que permite que assistentes de IA, como o Claude, interajam diretamente com o sistema SGP (Sistema de Gestão para Provedores de Internet).</p>
+
+        <h3>Funcionalidades</h3>
+        <ul style="margin-left: 20px; color: var(--text-muted);">
+          <li><strong>Multi-Tenant:</strong> Suporta múltiplos SGPs - cada usuário configura suas próprias credenciais</li>
+          <li><strong>Clientes e Contratos:</strong> Consulta, listagem e detalhes</li>
+          <li><strong>Financeiro:</strong> Faturas, boletos, segunda via</li>
+          <li><strong>Suporte:</strong> Abertura e gestão de chamados</li>
+          <li><strong>Ordens de Serviço:</strong> Criação, agendamento, transferência</li>
+          <li><strong>FTTH:</strong> Gerenciamento de ONUs, OLTs, caixas</li>
+          <li><strong>Estoque:</strong> Produtos, movimentações, inventário</li>
+          <li><strong>RADIUS:</strong> Usuários, sessões, bloqueios</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Endpoints</h3>
+        <table class="endpoints-table">
+          <thead>
+            <tr>
+              <th>Método</th>
+              <th>Endpoint</th>
+              <th>Descrição</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="method-badge method-get">GET</span></td>
+              <td><code>/</code></td>
+              <td>Esta página de documentação</td>
+            </tr>
+            <tr>
+              <td><span class="method-badge method-get">GET</span></td>
+              <td><code>/health</code></td>
+              <td>Health check (JSON)</td>
+            </tr>
+            <tr>
+              <td><span class="method-badge method-get">GET</span></td>
+              <td><code>/tools</code></td>
+              <td>Lista todas as ferramentas disponíveis</td>
+            </tr>
+            <tr>
+              <td><span class="method-badge method-get">GET</span></td>
+              <td><code>/sse</code></td>
+              <td>Endpoint MCP (Server-Sent Events)</td>
+            </tr>
+            <tr>
+              <td><span class="method-badge method-post">POST</span></td>
+              <td><code>/mcp</code></td>
+              <td>Endpoint MCP (Streamable HTTP)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Quickstart Section -->
+    <section id="quickstart">
+      <h2>🚀 Início Rápido</h2>
+
+      <div class="card">
+        <h3>1. Conectar ao MCP Server</h3>
+        <p>Use a URL SSE para conectar seu cliente MCP:</p>
+        <div class="code-block">
+          <pre>https://mcp-sgp.thiagojbs.workers.dev/sse</pre>
+          <button class="copy-btn" onclick="copyToClipboard('https://mcp-sgp.thiagojbs.workers.dev/sse')">Copiar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2. Configurar Credenciais do SGP</h3>
+        <p>O primeiro passo é sempre configurar o SGP que será usado:</p>
+        <div class="code-block">
+          <pre>{
+  "tool": "sgp_configurar",
+  "params": {
+    "sgp_url": "https://seuprovedor.sgp.net.br/api",
+    "auth_type": "token",
+    "token": "SEU_TOKEN_AQUI",
+    "app": "NOME_DO_APP"
+  }
+}</pre>
+          <button class="copy-btn" onclick="copyToClipboard(this.previousElementSibling.textContent)">Copiar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>3. Usar as Ferramentas</h3>
+        <p>Após configurar, você pode usar qualquer ferramenta. Exemplo:</p>
+        <div class="code-block">
+          <pre>// Consultar um cliente por CPF
+{
+  "tool": "sgp_consultar_cliente",
+  "params": {
+    "cpfcnpj": "12345678900"
+  }
+}
+
+// Listar faturas em aberto
+{
+  "tool": "sgp_listar_faturas",
+  "params": {
+    "status": "aberta"
+  }
+}
+
+// Abrir um chamado
+{
+  "tool": "sgp_abrir_chamado",
+  "params": {
+    "cliente_id": 123,
+    "categoria_id": 1,
+    "titulo": "Problema de conexão",
+    "descricao": "Cliente sem internet desde ontem"
+  }
+}</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Configuração no Claude Desktop</h3>
+        <p>Adicione ao arquivo <code>claude_desktop_config.json</code>:</p>
+        <div class="code-block">
+          <pre>{
+  "mcpServers": {
+    "sgp": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp-sgp.thiagojbs.workers.dev/sse"
+      ]
+    }
+  }
+}</pre>
+          <button class="copy-btn" onclick="copyToClipboard(this.previousElementSibling.textContent)">Copiar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools">
+      <h2>🔧 Ferramentas Disponíveis</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">Clique em uma categoria para expandir e ver todas as ferramentas.</p>
+
+      <div id="tools-list-container">
+        <!-- Será preenchido via JavaScript -->
+        <div style="text-align: center; padding: 40px;">
+          <div class="spinner"></div>
+          <p style="margin-top: 15px; color: var(--text-muted);">Carregando ferramentas...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Playground Section -->
+    <section id="playground">
+      <h2>🧪 Playground</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">Teste as ferramentas do MCP Server diretamente aqui.</p>
+
+      <div class="playground-container">
+        <div class="card playground-section">
+          <h3>Configuração</h3>
+
+          <div class="form-group">
+            <label>URL do SGP</label>
+            <input type="text" id="sgp-url" placeholder="https://demo.sgp.net.br/api" value="https://demo.sgp.net.br/api">
+          </div>
+
+          <div class="form-group">
+            <label>Tipo de Autenticação</label>
+            <select id="auth-type">
+              <option value="token">Token + App</option>
+              <option value="basic">Usuário e Senha</option>
+            </select>
+          </div>
+
+          <div id="token-auth">
+            <div class="form-group">
+              <label>Token</label>
+              <input type="text" id="sgp-token" placeholder="Seu token de API">
+            </div>
+            <div class="form-group">
+              <label>App</label>
+              <input type="text" id="sgp-app" placeholder="Nome do aplicativo">
+            </div>
+          </div>
+
+          <div id="basic-auth" style="display: none;">
+            <div class="form-group">
+              <label>Usuário</label>
+              <input type="text" id="sgp-username" placeholder="Usuário do SGP">
+            </div>
+            <div class="form-group">
+              <label>Senha</label>
+              <input type="password" id="sgp-password" placeholder="Senha">
+            </div>
+          </div>
+
+          <button id="btn-configure" onclick="configureSGP()">Configurar SGP</button>
+        </div>
+
+        <div class="card playground-section">
+          <h3>Testar Ferramenta</h3>
+
+          <div class="form-group">
+            <label>Ferramenta</label>
+            <select id="tool-select">
+              <option value="">Selecione uma ferramenta...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Parâmetros (JSON)</label>
+            <textarea id="tool-params" placeholder='{"cpfcnpj": "12345678900"}'></textarea>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button id="btn-execute" onclick="executeTool()">Executar</button>
+            <button class="btn-secondary" onclick="clearResponse()">Limpar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <h3>Resposta</h3>
+        <div id="response-area" class="response-area">
+          <span style="color: var(--text-muted);">A resposta aparecerá aqui...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Section -->
+    <section id="api">
+      <h2>📡 API Reference</h2>
+
+      <div class="card">
+        <h3>Autenticação</h3>
+        <p>A API do SGP suporta dois métodos de autenticação:</p>
+
+        <h4 style="margin-top: 20px; color: var(--primary);">Token + App (Recomendado)</h4>
+        <div class="code-block">
+          <pre>GET /api/endpoint?token=SEU_TOKEN&app=NOME_APP</pre>
+        </div>
+
+        <h4 style="margin-top: 20px; color: var(--primary);">Basic Authentication</h4>
+        <div class="code-block">
+          <pre>Authorization: Basic base64(usuario:senha)</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Formato de Resposta</h3>
+        <p>Todas as respostas seguem o formato:</p>
+        <div class="code-block">
+          <pre>{
+  "status": "success" | "error",
+  "message": "Mensagem descritiva",
+  "data": { ... }
+}</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Paginação</h3>
+        <p>Endpoints que retornam listas suportam paginação:</p>
+        <div class="code-block">
+          <pre>?page=1&per_page=20</pre>
+        </div>
+        <p style="margin-top: 10px; color: var(--text-muted);">Máximo de 100 itens por página.</p>
+      </div>
+
+      <div class="card">
+        <h3>Rate Limits</h3>
+        <table class="endpoints-table">
+          <thead>
+            <tr>
+              <th>Tipo de Autenticação</th>
+              <th>Limite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Token</td>
+              <td>300 requisições/minuto</td>
+            </tr>
+            <tr>
+              <td>Basic Auth</td>
+              <td>100 requisições/minuto</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>SGP MCP Server v1.0.0 | Desenvolvido com ❤️ para provedores de internet</p>
+      <p style="margin-top: 10px;">
+        <a href="https://github.com/thiagojbs/mcp-sgp" target="_blank">GitHub</a> •
+        <a href="https://documenter.getpostman.com/view/6682240/UzXKVyUs" target="_blank">Documentação SGP</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        link.classList.add('active');
+        document.getElementById(link.dataset.section).classList.add('active');
+      });
+    });
+
+    // Auth type toggle
+    document.getElementById('auth-type').addEventListener('change', function() {
+      document.getElementById('token-auth').style.display = this.value === 'token' ? 'block' : 'none';
+      document.getElementById('basic-auth').style.display = this.value === 'basic' ? 'block' : 'none';
+    });
+
+    // Copy to clipboard
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text.trim());
+      alert('Copiado!');
+    }
+
+    // Tools data
+    const toolsData = {
+      "Configuração": {
+        icon: "⚙️",
+        tools: [
+          { name: "sgp_configurar", desc: "Configura as credenciais do SGP (CHAMAR PRIMEIRO)" },
+          { name: "sgp_status_conexao", desc: "Verifica status da conexão com o SGP" }
+        ]
+      },
+      "Clientes": {
+        icon: "👥",
+        tools: [
+          { name: "sgp_consultar_cliente", desc: "Consulta clientes por CPF/CNPJ, telefone ou nome" },
+          { name: "sgp_detalhes_cliente", desc: "Retorna detalhes completos de um cliente" }
+        ]
+      },
+      "Contratos": {
+        icon: "📄",
+        tools: [
+          { name: "sgp_listar_contratos", desc: "Lista contratos com filtros" },
+          { name: "sgp_detalhes_contrato", desc: "Detalhes de um contrato" },
+          { name: "sgp_consultar_contrato_resumido", desc: "Consulta rápida via URA" }
+        ]
+      },
+      "Faturas": {
+        icon: "💰",
+        tools: [
+          { name: "sgp_listar_faturas", desc: "Lista faturas com filtros" },
+          { name: "sgp_detalhes_fatura", desc: "Detalhes de uma fatura" },
+          { name: "sgp_segunda_via_fatura", desc: "Gera segunda via" },
+          { name: "sgp_faturas_contrato", desc: "Faturas de um contrato" },
+          { name: "sgp_listar_boletos", desc: "Lista boletos" },
+          { name: "sgp_detalhes_boleto", desc: "Detalhes de um boleto" },
+          { name: "sgp_gerar_boleto", desc: "Gera novo boleto" }
+        ]
+      },
+      "Chamados": {
+        icon: "🎫",
+        tools: [
+          { name: "sgp_listar_chamados", desc: "Lista chamados com filtros" },
+          { name: "sgp_detalhes_chamado", desc: "Detalhes de um chamado" },
+          { name: "sgp_abrir_chamado", desc: "Abre novo chamado" },
+          { name: "sgp_interagir_chamado", desc: "Adiciona interação" },
+          { name: "sgp_atribuir_chamado", desc: "Atribui a atendente" },
+          { name: "sgp_finalizar_chamado", desc: "Finaliza atendimento" },
+          { name: "sgp_listar_categorias_chamado", desc: "Lista categorias" },
+          { name: "sgp_listar_interacoes_chamado", desc: "Lista interações" }
+        ]
+      },
+      "Ordens de Serviço": {
+        icon: "🔧",
+        tools: [
+          { name: "sgp_listar_ordens_servico", desc: "Lista OS com filtros" },
+          { name: "sgp_detalhes_ordem_servico", desc: "Detalhes de uma OS" },
+          { name: "sgp_criar_ordem_servico", desc: "Cria nova OS" },
+          { name: "sgp_atualizar_status_ordem", desc: "Atualiza status" },
+          { name: "sgp_reagendar_ordem", desc: "Reagenda OS" },
+          { name: "sgp_transferir_ordem", desc: "Transfere para técnico" },
+          { name: "sgp_comentario_ordem", desc: "Adiciona comentário" },
+          { name: "sgp_listar_comentarios_ordem", desc: "Lista comentários" },
+          { name: "sgp_listar_tipos_os", desc: "Lista tipos de OS" },
+          { name: "sgp_listar_tecnicos", desc: "Lista técnicos" },
+          { name: "sgp_agenda_tecnico", desc: "Agenda de técnico" }
+        ]
+      },
+      "FTTH": {
+        icon: "🌐",
+        tools: [
+          { name: "sgp_listar_onus", desc: "Lista ONUs" },
+          { name: "sgp_detalhes_onu", desc: "Detalhes de ONU" },
+          { name: "sgp_provisionar_onu", desc: "Provisiona ONU" },
+          { name: "sgp_desprovisionar_onu", desc: "Desprovisiona ONU" },
+          { name: "sgp_reiniciar_onu", desc: "Reinicia ONU" },
+          { name: "sgp_status_onu", desc: "Status em tempo real" },
+          { name: "sgp_listar_olts", desc: "Lista OLTs" },
+          { name: "sgp_detalhes_olt", desc: "Detalhes de OLT" },
+          { name: "sgp_listar_caixas", desc: "Lista caixas" },
+          { name: "sgp_detalhes_caixa", desc: "Detalhes de caixa" },
+          { name: "sgp_listar_splitters", desc: "Lista splitters" },
+          { name: "sgp_detalhes_splitter", desc: "Detalhes de splitter" }
+        ]
+      },
+      "Estoque": {
+        icon: "📦",
+        tools: [
+          { name: "sgp_listar_produtos", desc: "Lista produtos" },
+          { name: "sgp_detalhes_produto", desc: "Detalhes de produto" },
+          { name: "sgp_listar_movimentacoes", desc: "Lista movimentações" },
+          { name: "sgp_cadastrar_movimentacao", desc: "Registra entrada/saída" },
+          { name: "sgp_listar_fornecedores", desc: "Lista fornecedores" },
+          { name: "sgp_listar_categorias_estoque", desc: "Lista categorias" },
+          { name: "sgp_listar_inventarios", desc: "Lista inventários" },
+          { name: "sgp_detalhes_inventario", desc: "Detalhes de inventário" }
+        ]
+      },
+      "RADIUS": {
+        icon: "📡",
+        tools: [
+          { name: "sgp_listar_usuarios_radius", desc: "Lista usuários RADIUS" },
+          { name: "sgp_detalhes_usuario_radius", desc: "Detalhes de usuário" },
+          { name: "sgp_bloquear_usuario_radius", desc: "Bloqueia usuário" },
+          { name: "sgp_desbloquear_usuario_radius", desc: "Desbloqueia usuário" },
+          { name: "sgp_resetar_senha_radius", desc: "Reseta senha" },
+          { name: "sgp_listar_sessoes_radius", desc: "Lista sessões" },
+          { name: "sgp_detalhes_sessao_radius", desc: "Detalhes de sessão" },
+          { name: "sgp_encerrar_sessao_radius", desc: "Encerra sessão" },
+          { name: "sgp_listar_grupos_radius", desc: "Lista grupos" },
+          { name: "sgp_listar_nas", desc: "Lista NAS" },
+          { name: "sgp_detalhes_nas", desc: "Detalhes de NAS" },
+          { name: "sgp_listar_accounting_radius", desc: "Lista accounting" }
+        ]
+      }
+    };
+
+    // Render tools list
+    function renderToolsList() {
+      const container = document.getElementById('tools-list-container');
+      let html = '';
+      let totalTools = 0;
+      const toolSelect = document.getElementById('tool-select');
+
+      for (const [category, data] of Object.entries(toolsData)) {
+        totalTools += data.tools.length;
+        html += `
+          <div class="tools-category">
+            <div class="category-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+              <span class="category-icon">${data.icon}</span>
+              <span class="category-title">${category}</span>
+              <span class="category-count">${data.tools.length}</span>
+            </div>
+            <div class="tools-list" style="display: none;">
+              ${data.tools.map(tool => `
+                <div class="tool-item" onclick="selectTool('${tool.name}')">
+                  <div class="tool-name">${tool.name}</div>
+                  <div class="tool-desc">${tool.desc}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+
+        // Add to select
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = category;
+        data.tools.forEach(tool => {
+          const option = document.createElement('option');
+          option.value = tool.name;
+          option.textContent = tool.name;
+          optgroup.appendChild(option);
+        });
+        toolSelect.appendChild(optgroup);
+      }
+
+      container.innerHTML = html;
+      document.getElementById('tools-count').textContent = totalTools;
+    }
+
+    // Select tool
+    function selectTool(name) {
+      document.getElementById('tool-select').value = name;
+      document.querySelector('[data-section="playground"]').click();
+
+      // Set default params
+      const defaultParams = getDefaultParams(name);
+      document.getElementById('tool-params').value = JSON.stringify(defaultParams, null, 2);
+    }
+
+    function getDefaultParams(toolName) {
+      const params = {
+        'sgp_configurar': { sgp_url: 'https://demo.sgp.net.br/api', auth_type: 'token', token: '', app: '' },
+        'sgp_consultar_cliente': { cpfcnpj: '' },
+        'sgp_listar_contratos': { status: 'ativo', page: 1 },
+        'sgp_listar_faturas': { status: 'aberta', page: 1 },
+        'sgp_listar_chamados': { status: 'aberto', page: 1 },
+        'sgp_abrir_chamado': { cliente_id: 0, categoria_id: 0, titulo: '', descricao: '' },
+        'sgp_listar_ordens_servico': { status: 'pendente', page: 1 },
+        'sgp_listar_onus': { status: 'online', page: 1 },
+        'sgp_listar_produtos': { page: 1 },
+        'sgp_listar_usuarios_radius': { status: 'ativo', page: 1 }
+      };
+      return params[toolName] || {};
+    }
+
+    // Configure SGP
+    async function configureSGP() {
+      const btn = document.getElementById('btn-configure');
+      btn.innerHTML = '<span class="spinner"></span> Configurando...';
+      btn.disabled = true;
+
+      const config = {
+        sgp_url: document.getElementById('sgp-url').value,
+        auth_type: document.getElementById('auth-type').value
+      };
+
+      if (config.auth_type === 'token') {
+        config.token = document.getElementById('sgp-token').value;
+        config.app = document.getElementById('sgp-app').value;
+      } else {
+        config.username = document.getElementById('sgp-username').value;
+        config.password = document.getElementById('sgp-password').value;
+      }
+
+      // Store config
+      localStorage.setItem('sgp_config', JSON.stringify(config));
+
+      showResponse({
+        status: 'success',
+        message: 'Configuração salva localmente!',
+        config: { ...config, token: config.token ? '***' : undefined, password: config.password ? '***' : undefined }
+      }, true);
+
+      btn.innerHTML = 'Configurar SGP';
+      btn.disabled = false;
+    }
+
+    // Execute tool
+    async function executeTool() {
+      const btn = document.getElementById('btn-execute');
+      const tool = document.getElementById('tool-select').value;
+      const paramsText = document.getElementById('tool-params').value;
+
+      if (!tool) {
+        alert('Selecione uma ferramenta');
+        return;
+      }
+
+      let params = {};
+      try {
+        if (paramsText.trim()) {
+          params = JSON.parse(paramsText);
+        }
+      } catch (e) {
+        showResponse({ status: 'error', message: 'JSON inválido nos parâmetros' }, false);
+        return;
+      }
+
+      btn.innerHTML = '<span class="spinner"></span> Executando...';
+      btn.disabled = true;
+
+      // Get stored config
+      const storedConfig = localStorage.getItem('sgp_config');
+      if (storedConfig && tool !== 'sgp_configurar') {
+        const config = JSON.parse(storedConfig);
+        params = { ...config, ...params };
+      }
+
+      try {
+        // Simulate API call (in real implementation, this would call the MCP endpoint)
+        const response = await fetch('/api/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tool, params })
+        });
+
+        const data = await response.json();
+        showResponse(data, data.status === 'success');
+      } catch (error) {
+        showResponse({
+          status: 'info',
+          message: 'Este playground é apenas para visualização.',
+          note: 'Para executar as ferramentas de verdade, conecte um cliente MCP ao endpoint /sse',
+          tool_called: tool,
+          params_sent: params
+        }, true);
+      }
+
+      btn.innerHTML = 'Executar';
+      btn.disabled = false;
+    }
+
+    function showResponse(data, success) {
+      const area = document.getElementById('response-area');
+      area.textContent = JSON.stringify(data, null, 2);
+      area.className = 'response-area ' + (success ? 'response-success' : 'response-error');
+    }
+
+    function clearResponse() {
+      const area = document.getElementById('response-area');
+      area.textContent = 'A resposta aparecerá aqui...';
+      area.className = 'response-area';
+    }
+
+    // Load stored config
+    function loadStoredConfig() {
+      const stored = localStorage.getItem('sgp_config');
+      if (stored) {
+        const config = JSON.parse(stored);
+        document.getElementById('sgp-url').value = config.sgp_url || '';
+        document.getElementById('auth-type').value = config.auth_type || 'token';
+        if (config.auth_type === 'basic') {
+          document.getElementById('token-auth').style.display = 'none';
+          document.getElementById('basic-auth').style.display = 'block';
+        }
+      }
+    }
+
+    // Initialize
+    renderToolsList();
+    loadStoredConfig();
+  </script>
+</body>
+</html>

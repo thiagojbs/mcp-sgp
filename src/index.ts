@@ -13,6 +13,9 @@
  * - Monitorar RADIUS
  */
 
+// HTML da página de documentação
+import indexHtml from './pages/index.html';
+
 import { McpAgent } from 'agents/mcp';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SGPClient, SGPConfig } from './sgp-client';
@@ -384,8 +387,15 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
-    // Health check
-    if (url.pathname === '/health' || url.pathname === '/') {
+    // Página principal - Documentação e Playground
+    if (url.pathname === '/') {
+      return new Response(indexHtml, {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
+    }
+
+    // Health check (JSON)
+    if (url.pathname === '/health') {
       return new Response(JSON.stringify({
         status: 'ok',
         server: 'SGP MCP Server (Multi-Tenant)',
@@ -393,16 +403,19 @@ export default {
         description: 'MCP Server para integração com múltiplos SGPs de diferentes provedores',
         tools: allTools.length + 2,
         endpoints: {
+          docs: '/',
+          health: '/health',
+          tools: '/tools',
           mcp: '/mcp',
           sse: '/sse'
         },
         setup: 'Use a ferramenta sgp_configurar para definir as credenciais do SGP antes de usar outras ferramentas'
-      }), {
+      }, null, 2), {
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Lista de ferramentas
+    // Lista de ferramentas (JSON)
     if (url.pathname === '/tools') {
       return new Response(JSON.stringify({
         setup_tools: [
@@ -424,6 +437,30 @@ export default {
       }, null, 2), {
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    // API de teste para o playground
+    if (url.pathname === '/api/test' && request.method === 'POST') {
+      try {
+        const body = await request.json() as { tool: string; params: Record<string, unknown> };
+        return new Response(JSON.stringify({
+          status: 'info',
+          message: 'Este endpoint é apenas para demonstração do playground.',
+          note: 'Para executar as ferramentas de verdade, conecte um cliente MCP ao endpoint /sse',
+          tool_received: body.tool,
+          params_received: body.params
+        }, null, 2), {
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch {
+        return new Response(JSON.stringify({
+          status: 'error',
+          message: 'Erro ao processar requisição'
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
     }
 
     // MCP endpoints (streamable HTTP e SSE)
