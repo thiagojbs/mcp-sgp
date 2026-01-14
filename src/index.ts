@@ -34,6 +34,7 @@ import { termosTools } from './tools/termos';
 import { uraTools } from './tools/ura';
 import { preCadastrosTools } from './tools/pre-cadastros';
 import { outrosTools } from './tools/outros';
+import { centralAssinanteTools } from './tools/central-assinante';
 
 // Interface de ambiente
 interface Env {
@@ -54,7 +55,8 @@ const allTools = [
   ...termosTools,
   ...uraTools,
   ...preCadastrosTools,
-  ...outrosTools
+  ...outrosTools,
+  ...centralAssinanteTools
 ];
 
 // Schema para configuração de credenciais
@@ -359,6 +361,7 @@ export class SGPMcpAgent extends McpAgent {
                 'Termos de Aceite',
                 'URA (Atendimento Automático)',
                 'Pré-Cadastros (Leads)',
+                'Central do Assinante (Autoatendimento)',
                 'Localização, Logs, Notificações, Configurações e Relatórios'
               ],
               totalTools: allTools.length + 2 // +2 para sgp_configurar e sgp_status_conexao
