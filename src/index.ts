@@ -29,6 +29,11 @@ import { ordensServicoTools } from './tools/ordens-servico';
 import { ftthTools } from './tools/ftth';
 import { estoqueTools } from './tools/estoque';
 import { radiusTools } from './tools/radius';
+import { remessaRetornoTools } from './tools/remessa-retorno';
+import { termosTools } from './tools/termos';
+import { uraTools } from './tools/ura';
+import { preCadastrosTools } from './tools/pre-cadastros';
+import { outrosTools } from './tools/outros';
 
 // Interface de ambiente
 interface Env {
@@ -44,7 +49,12 @@ const allTools = [
   ...ordensServicoTools,
   ...ftthTools,
   ...estoqueTools,
-  ...radiusTools
+  ...radiusTools,
+  ...remessaRetornoTools,
+  ...termosTools,
+  ...uraTools,
+  ...preCadastrosTools,
+  ...outrosTools
 ];
 
 // Schema para configuração de credenciais
@@ -344,7 +354,12 @@ export class SGPMcpAgent extends McpAgent {
                 'Ordens de Serviço',
                 'FTTH (ONUs, OLTs, Caixas, Splitters)',
                 'Estoque',
-                'RADIUS'
+                'RADIUS',
+                'Remessa/Retorno Bancário',
+                'Termos de Aceite',
+                'URA (Atendimento Automático)',
+                'Pré-Cadastros (Leads)',
+                'Localização, Logs, Notificações, Configurações e Relatórios'
               ],
               totalTools: allTools.length + 2 // +2 para sgp_configurar e sgp_status_conexao
             }, null, 2)
