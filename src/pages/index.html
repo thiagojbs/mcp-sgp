@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SGP MCP Server - Documentação e Playground</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%238B5CF6'/><path d='M35 50h30M50 35v30' stroke='white' stroke-width='6' stroke-linecap='round'/></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #8B5CF6;
       --primary-light: #A78BFA;
       --primary-dark: #7C3AED;
-      --primary-bg: rgba(139, 92, 246, 0.08);
+      --primary-bg: rgba(139, 92, 246, 0.06);
       --secondary: #1a1a2e;
       --accent: #F97316;
       --accent-light: #FB923C;
@@ -22,19 +22,19 @@
       --text-secondary: #4B5563;
       --text-muted: #6B7280;
       --success: #10B981;
-      --success-bg: rgba(16, 185, 129, 0.1);
+      --success-bg: rgba(16, 185, 129, 0.08);
       --error: #EF4444;
-      --error-bg: rgba(239, 68, 68, 0.1);
+      --error-bg: rgba(239, 68, 68, 0.08);
       --warning: #F59E0B;
       --border: #E5E7EB;
       --border-light: #F3F4F6;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-      --radius: 12px;
-      --radius-sm: 8px;
-      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+      --radius: 10px;
+      --radius-sm: 6px;
+      --radius-lg: 12px;
     }
 
     * {
@@ -47,55 +47,83 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
-      font-size: 15px;
+      line-height: 1.5;
+      font-size: 14px;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 20px;
     }
 
-    /* Header - Paper Vines Style */
+    /* SVG Icon System */
+    .icon {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    .icon-sm { width: 14px; height: 14px; }
+    .icon-lg { width: 22px; height: 22px; }
+
+    /* Header - Compact */
     header {
       background: var(--bg-white);
       border-bottom: 1px solid var(--border);
-      padding: 20px 0;
+      padding: 12px 0;
       position: sticky;
       top: 0;
       z-index: 100;
+      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.95);
     }
 
     .header-content {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .header-left {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     .logo {
-      font-size: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 48px;
-      height: 48px;
-      background: var(--primary-bg);
-      border-radius: var(--radius);
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border-radius: var(--radius-sm);
+      color: white;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .logo svg {
+      width: 20px;
+      height: 20px;
     }
 
     .header-text h1 {
-      font-size: 1.5rem;
+      font-size: 1.125rem;
       font-weight: 700;
       color: var(--text);
+      letter-spacing: -0.02em;
     }
 
     .header-text h1 span {
@@ -104,153 +132,216 @@
 
     .header-text p {
       color: var(--text-muted);
-      font-size: 0.875rem;
+      font-size: 0.75rem;
     }
 
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
+      gap: 6px;
+      padding: 6px 12px;
       background: var(--success-bg);
-      border-radius: 24px;
+      border-radius: 20px;
       color: var(--success);
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-weight: 500;
+      transition: transform 0.2s ease;
+    }
+
+    .status-badge:hover {
+      transform: scale(1.02);
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background: var(--success);
       border-radius: 50%;
-      animation: pulse 2s infinite;
+      animation: pulse 2s ease-in-out infinite;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.7; transform: scale(1.1); }
+      50% { opacity: 0.6; transform: scale(1.2); }
     }
 
-    /* Navigation - Paper Vines Style */
+    /* Navigation - Compact */
     nav {
-      background: var(--bg-white);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
       position: sticky;
-      top: 88px;
+      top: 60px;
       z-index: 99;
     }
 
     .nav-links {
       display: flex;
-      gap: 8px;
-      padding: 16px 0;
+      gap: 4px;
+      padding: 10px 0;
       overflow-x: auto;
     }
 
     .nav-link {
-      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
       background: transparent;
       border: none;
       border-radius: var(--radius-sm);
-      color: var(--text-secondary);
+      color: var(--text-muted);
       text-decoration: none;
       white-space: nowrap;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       cursor: pointer;
       font-weight: 500;
-      font-size: 0.9rem;
+      font-size: 0.8125rem;
     }
 
     .nav-link:hover {
       background: var(--primary-bg);
       color: var(--primary);
+      transform: translateY(-1px);
     }
 
     .nav-link.active {
       background: var(--primary);
       color: white;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
     }
 
-    /* Main */
+    /* Main - Compact */
     main {
-      padding: 40px 0;
-      min-height: calc(100vh - 300px);
+      padding: 24px 0;
+      min-height: calc(100vh - 250px);
     }
 
     section {
       display: none;
-      animation: fadeIn 0.3s ease;
+      animation: slideIn 0.3s ease;
     }
 
     section.active {
       display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     h2 {
-      font-size: 1.75rem;
-      margin-bottom: 24px;
-      color: var(--primary);
+      font-size: 1.375rem;
+      margin-bottom: 16px;
+      color: var(--text);
       font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2 .icon {
+      color: var(--primary);
     }
 
     h3 {
-      font-size: 1.125rem;
-      margin: 24px 0 12px;
+      font-size: 0.9375rem;
+      margin: 16px 0 8px;
       color: var(--text);
       font-weight: 600;
     }
 
     p {
       color: var(--text-secondary);
+      font-size: 0.875rem;
     }
 
-    /* Cards - Paper Vines Style */
+    /* Cards - Compact with Animations */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 28px;
-      margin-bottom: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
       box-shadow: var(--shadow-sm);
-      transition: box-shadow 0.2s ease;
+      transition: all 0.2s ease;
+      animation: fadeInUp 0.4s ease backwards;
     }
 
     .card:hover {
       box-shadow: var(--shadow);
+      transform: translateY(-2px);
     }
 
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 32px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
     }
+
+    .card-grid .card:nth-child(1) { animation-delay: 0.1s; }
+    .card-grid .card:nth-child(2) { animation-delay: 0.15s; }
+    .card-grid .card:nth-child(3) { animation-delay: 0.2s; }
 
     .stat-card {
       text-align: center;
-      padding: 32px;
-      border-left: 4px solid var(--primary);
+      padding: 20px;
+      border-left: 3px solid var(--primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, var(--primary-bg) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
     }
 
     .stat-card:nth-child(2) {
       border-left-color: var(--success);
     }
 
+    .stat-card:nth-child(2)::before {
+      background: linear-gradient(135deg, var(--success-bg) 0%, transparent 50%);
+    }
+
     .stat-card:nth-child(3) {
       border-left-color: var(--accent);
     }
 
+    .stat-card:nth-child(3)::before {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.06) 0%, transparent 50%);
+    }
+
     .stat-number {
-      font-size: 3rem;
+      font-size: 2.25rem;
       font-weight: 700;
       color: var(--primary);
       line-height: 1;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover .stat-number {
+      transform: scale(1.05);
     }
 
     .stat-card:nth-child(2) .stat-number {
@@ -263,68 +354,80 @@
 
     .stat-label {
       color: var(--text-muted);
-      margin-top: 8px;
+      margin-top: 4px;
       font-weight: 500;
+      font-size: 0.8125rem;
+      position: relative;
     }
 
-    /* Feature list */
+    /* Feature list - Compact */
     .feature-list {
       list-style: none;
-      margin: 16px 0;
+      margin: 12px 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 8px;
     }
 
     .feature-list li {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-light);
+      gap: 10px;
+      padding: 10px 12px;
       color: var(--text-secondary);
+      font-size: 0.8125rem;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
     }
 
-    .feature-list li:last-child {
-      border-bottom: none;
+    .feature-list li:hover {
+      background: var(--primary-bg);
+      transform: translateX(4px);
     }
 
     .feature-list li::before {
-      content: "✓";
+      content: "";
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 24px;
-      height: 24px;
-      background: var(--success-bg);
-      color: var(--success);
+      width: 18px;
+      height: 18px;
+      background: var(--success);
       border-radius: 50%;
-      font-size: 0.75rem;
-      font-weight: 700;
       flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+      background-size: 10px;
+      background-repeat: no-repeat;
+      background-position: center;
     }
 
     .feature-list li strong {
       color: var(--text);
     }
 
-    /* Code blocks - Paper Vines Style */
+    /* Code blocks - Compact */
     pre, code {
       font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
       border-radius: var(--radius-sm);
     }
 
     pre {
-      background: #1E1E2E;
-      padding: 20px;
+      background: #1a1b26;
+      padding: 14px;
       overflow-x: auto;
       border: none;
-      margin: 16px 0;
-      color: #E0E0E0;
+      margin: 12px 0;
+      color: #a9b1d6;
+      font-size: 0.8125rem;
+      line-height: 1.5;
     }
 
     code {
       background: var(--primary-bg);
       color: var(--primary);
-      padding: 3px 8px;
-      font-size: 0.875em;
+      padding: 2px 6px;
+      font-size: 0.8125em;
     }
 
     pre code {
@@ -339,82 +442,113 @@
 
     .copy-btn {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      padding: 6px 12px;
-      background: rgba(255, 255, 255, 0.1);
+      top: 8px;
+      right: 8px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.08);
       border: none;
       border-radius: var(--radius-sm);
-      color: #E0E0E0;
+      color: #a9b1d6;
       cursor: pointer;
-      font-size: 0.75rem;
-      transition: background 0.2s;
+      font-size: 0.6875rem;
+      transition: all 0.15s ease;
+      opacity: 0;
+    }
+
+    .code-block:hover .copy-btn {
+      opacity: 1;
     }
 
     .copy-btn:hover {
       background: var(--primary);
+      color: white;
     }
 
-    /* Tools list - Paper Vines Style */
+    /* Tools list - Compact with Animations */
     .tools-category {
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--border);
       background: var(--card-bg);
+      animation: fadeInUp 0.4s ease backwards;
     }
+
+    .tools-category:nth-child(odd) { animation-delay: 0.05s; }
+    .tools-category:nth-child(even) { animation-delay: 0.1s; }
 
     .category-header {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px 20px;
+      gap: 10px;
+      padding: 12px 14px;
       background: var(--bg-white);
       cursor: pointer;
-      transition: background 0.2s;
-      border-left: 4px solid var(--primary);
+      transition: all 0.15s ease;
+      border-left: 3px solid var(--primary);
     }
 
     .category-header:hover {
       background: var(--primary-bg);
+      padding-left: 18px;
     }
 
     .category-icon {
-      font-size: 1.25rem;
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: var(--primary-bg);
       border-radius: var(--radius-sm);
+      color: var(--primary);
+      transition: all 0.2s ease;
+    }
+
+    .category-header:hover .category-icon {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.05);
     }
 
     .category-title {
       flex: 1;
       font-weight: 600;
       color: var(--text);
+      font-size: 0.875rem;
     }
 
     .category-count {
-      background: var(--primary);
+      background: var(--text-muted);
       color: white;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.6875rem;
       font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .category-header:hover .category-count {
+      background: var(--primary);
     }
 
     .tools-list {
       border-top: 1px solid var(--border);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .tools-list.open {
+      max-height: 2000px;
     }
 
     .tool-item {
-      padding: 16px 20px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border-light);
       cursor: pointer;
-      transition: all 0.2s;
-      margin-left: 4px;
+      transition: all 0.15s ease;
+      margin-left: 3px;
     }
 
     .tool-item:last-child {
@@ -424,27 +558,28 @@
     .tool-item:hover {
       background: var(--primary-bg);
       margin-left: 0;
-      border-left: 4px solid var(--primary);
+      border-left: 3px solid var(--primary);
+      padding-left: 17px;
     }
 
     .tool-name {
       font-family: 'JetBrains Mono', monospace;
       color: var(--primary);
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.8125rem;
     }
 
     .tool-desc {
       color: var(--text-muted);
-      font-size: 0.875rem;
-      margin-top: 4px;
+      font-size: 0.75rem;
+      margin-top: 2px;
     }
 
-    /* Playground - Paper Vines Style */
+    /* Playground - Compact */
     .playground-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      gap: 16px;
     }
 
     @media (max-width: 900px) {
@@ -457,38 +592,38 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 24px;
+      padding: 16px;
     }
 
     .playground-section h3 {
       margin-top: 0;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
     }
 
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: var(--text-secondary);
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-weight: 500;
     }
 
     input, select, textarea {
       width: 100%;
-      padding: 12px 16px;
+      padding: 10px 12px;
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text);
-      font-size: 0.9375rem;
+      font-size: 0.8125rem;
       font-family: inherit;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
     }
 
     input:focus, select:focus, textarea:focus {
@@ -498,28 +633,32 @@
     }
 
     textarea {
-      min-height: 150px;
+      min-height: 120px;
       font-family: 'JetBrains Mono', monospace;
       resize: vertical;
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
     }
 
     button {
-      padding: 12px 24px;
+      padding: 10px 18px;
       background: var(--primary);
       border: none;
       border-radius: var(--radius-sm);
       color: white;
-      font-size: 0.9375rem;
+      font-size: 0.8125rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
     }
 
     button:hover {
       background: var(--primary-dark);
       transform: translateY(-1px);
       box-shadow: var(--shadow-md);
+    }
+
+    button:active {
+      transform: translateY(0);
     }
 
     button:disabled {
@@ -541,27 +680,20 @@
       color: var(--primary);
     }
 
-    .btn-accent {
-      background: var(--accent);
-    }
-
-    .btn-accent:hover {
-      background: var(--accent-light);
-    }
-
     .response-area {
-      background: #1E1E2E;
+      background: #1a1b26;
       border: none;
       border-radius: var(--radius-sm);
-      padding: 20px;
-      min-height: 300px;
-      max-height: 500px;
+      padding: 14px;
+      min-height: 200px;
+      max-height: 350px;
       overflow: auto;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       white-space: pre-wrap;
       word-break: break-word;
-      color: #E0E0E0;
+      color: #a9b1d6;
+      transition: border-color 0.2s ease;
     }
 
     .response-success {
@@ -572,28 +704,29 @@
       border: 2px solid var(--error);
     }
 
-    /* Endpoints table - Paper Vines Style */
+    /* Endpoints table - Compact */
     .endpoints-table {
       width: 100%;
       border-collapse: collapse;
-      margin: 20px 0;
+      margin: 14px 0;
       border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--border);
+      font-size: 0.8125rem;
     }
 
     .endpoints-table th,
     .endpoints-table td {
-      padding: 14px 18px;
+      padding: 10px 14px;
       text-align: left;
       border-bottom: 1px solid var(--border);
     }
 
     .endpoints-table th {
-      background: var(--primary-bg);
-      color: var(--primary);
+      background: var(--bg);
+      color: var(--text-muted);
       font-weight: 600;
-      font-size: 0.875rem;
+      font-size: 0.6875rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -602,15 +735,19 @@
       border-bottom: none;
     }
 
+    .endpoints-table tr {
+      transition: background 0.15s ease;
+    }
+
     .endpoints-table tr:hover td {
       background: var(--primary-bg);
     }
 
     .method-badge {
       display: inline-block;
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: var(--radius-sm);
-      font-size: 0.75rem;
+      font-size: 0.625rem;
       font-weight: 700;
       text-transform: uppercase;
     }
@@ -618,25 +755,25 @@
     .method-get { background: var(--success-bg); color: var(--success); }
     .method-post { background: var(--primary-bg); color: var(--primary); }
 
-    /* Footer - Paper Vines Style */
+    /* Footer - Compact */
     footer {
       background: var(--bg-white);
       border-top: 1px solid var(--border);
-      padding: 40px 0;
-      margin-top: 60px;
+      padding: 24px 0;
+      margin-top: 40px;
       text-align: center;
     }
 
     footer p {
       color: var(--text-muted);
-      font-size: 0.875rem;
+      font-size: 0.75rem;
     }
 
     footer a {
       color: var(--primary);
       text-decoration: none;
       font-weight: 500;
-      transition: color 0.2s;
+      transition: all 0.15s ease;
     }
 
     footer a:hover {
@@ -646,25 +783,34 @@
     .footer-links {
       display: flex;
       justify-content: center;
-      gap: 24px;
-      margin-top: 16px;
+      gap: 20px;
+      margin-top: 12px;
     }
 
     .footer-links a {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+    }
+
+    .footer-links a:hover {
+      background: var(--primary-bg);
+      transform: translateY(-2px);
     }
 
     /* Loading spinner */
     .spinner {
       display: inline-block;
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       border: 2px solid rgba(255,255,255,0.3);
       border-radius: 50%;
       border-top-color: white;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.6s linear infinite;
     }
 
     @keyframes spin {
@@ -674,25 +820,26 @@
     /* Tabs */
     .tabs {
       display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
+      gap: 6px;
+      margin-bottom: 14px;
     }
 
     .tab {
-      padding: 10px 18px;
+      padding: 8px 14px;
       background: transparent;
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       font-weight: 500;
-      transition: all 0.2s;
+      transition: all 0.15s ease;
     }
 
     .tab:hover {
       border-color: var(--primary);
       color: var(--primary);
+      transform: translateY(-1px);
     }
 
     .tab.active {
@@ -705,16 +852,17 @@
     .info-box {
       display: flex;
       align-items: flex-start;
-      gap: 12px;
-      padding: 16px;
+      gap: 10px;
+      padding: 12px;
       background: var(--primary-bg);
       border-radius: var(--radius-sm);
-      border-left: 4px solid var(--primary);
-      margin: 16px 0;
+      border-left: 3px solid var(--primary);
+      margin: 12px 0;
+      font-size: 0.8125rem;
     }
 
     .info-box.warning {
-      background: rgba(245, 158, 11, 0.1);
+      background: rgba(245, 158, 11, 0.06);
       border-left-color: var(--warning);
     }
 
@@ -728,6 +876,7 @@
       .header-content {
         flex-direction: column;
         align-items: flex-start;
+        gap: 12px;
       }
 
       .card-grid {
@@ -735,37 +884,86 @@
       }
 
       .stat-number {
-        font-size: 2.5rem;
+        font-size: 1.75rem;
+      }
+
+      .feature-list {
+        grid-template-columns: 1fr;
       }
     }
 
     /* Scrollbar styling */
     ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
     }
 
     ::-webkit-scrollbar-track {
       background: var(--border-light);
-      border-radius: 4px;
+      border-radius: 3px;
     }
 
     ::-webkit-scrollbar-thumb {
       background: var(--border);
-      border-radius: 4px;
+      border-radius: 3px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
       background: var(--text-muted);
     }
+
+    /* Stagger animations for lists */
+    .stagger-item {
+      animation: fadeInUp 0.3s ease backwards;
+    }
+
+    .stagger-item:nth-child(1) { animation-delay: 0.05s; }
+    .stagger-item:nth-child(2) { animation-delay: 0.1s; }
+    .stagger-item:nth-child(3) { animation-delay: 0.15s; }
+    .stagger-item:nth-child(4) { animation-delay: 0.2s; }
+    .stagger-item:nth-child(5) { animation-delay: 0.25s; }
+    .stagger-item:nth-child(6) { animation-delay: 0.3s; }
   </style>
 </head>
 <body>
+  <!-- SVG Icon Definitions -->
+  <svg style="display: none;">
+    <defs>
+      <symbol id="icon-plug" viewBox="0 0 24 24"><path d="M12 2v4M8 6v4M16 6v4M9 10h6M12 14v8M9 10a3 3 0 0 0 6 0"></path></symbol>
+      <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"></path></symbol>
+      <symbol id="icon-rocket" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></symbol>
+      <symbol id="icon-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></symbol>
+      <symbol id="icon-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 9V3M14 9V3M9 9h6l3 12H6l3-12z"></path></symbol>
+      <symbol id="icon-server" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><path d="M6 6h.01M6 18h.01"></path></symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></symbol>
+      <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></symbol>
+      <symbol id="icon-dollar" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></symbol>
+      <symbol id="icon-ticket" viewBox="0 0 24 24"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2M13 17v2M13 11v2"></path></symbol>
+      <symbol id="icon-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path></symbol>
+      <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></symbol>
+      <symbol id="icon-box" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5M12 22V12"></path></symbol>
+      <symbol id="icon-wifi" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"></path></symbol>
+      <symbol id="icon-bank" viewBox="0 0 24 24"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"></path></symbol>
+      <symbol id="icon-scroll" viewBox="0 0 24 24"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 0 1-2 2Z"></path><path d="M10 17V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a4 4 0 0 0 4 4h12a2 2 0 0 0 2-2v-2"></path></symbol>
+      <symbol id="icon-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></symbol>
+      <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"></path></symbol>
+      <symbol id="icon-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></symbol>
+      <symbol id="icon-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></symbol>
+      <symbol id="icon-github" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></symbol>
+      <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></symbol>
+      <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></symbol>
+    </defs>
+  </svg>
+
   <header>
     <div class="container">
       <div class="header-content">
         <div class="header-left">
-          <div class="logo">🔌</div>
+          <div class="logo">
+            <svg class="icon"><use href="#icon-plug"></use></svg>
+          </div>
           <div class="header-text">
             <h1>SGP <span>MCP Server</span></h1>
             <p>Model Context Protocol para integração com o ERP SGP</p>
@@ -782,11 +980,11 @@
   <nav>
     <div class="container">
       <div class="nav-links">
-        <a class="nav-link active" data-section="overview">📊 Visão Geral</a>
-        <a class="nav-link" data-section="quickstart">🚀 Início Rápido</a>
-        <a class="nav-link" data-section="tools">🔧 Ferramentas</a>
-        <a class="nav-link" data-section="playground">🧪 Playground</a>
-        <a class="nav-link" data-section="api">📡 API</a>
+        <a class="nav-link active" data-section="overview"><svg class="icon icon-sm"><use href="#icon-chart"></use></svg> Visão Geral</a>
+        <a class="nav-link" data-section="quickstart"><svg class="icon icon-sm"><use href="#icon-rocket"></use></svg> Início Rápido</a>
+        <a class="nav-link" data-section="tools"><svg class="icon icon-sm"><use href="#icon-tool"></use></svg> Ferramentas</a>
+        <a class="nav-link" data-section="playground"><svg class="icon icon-sm"><use href="#icon-flask"></use></svg> Playground</a>
+        <a class="nav-link" data-section="api"><svg class="icon icon-sm"><use href="#icon-server"></use></svg> API</a>
       </div>
     </div>
   </nav>
@@ -794,7 +992,7 @@
   <main class="container">
     <!-- Overview Section -->
     <section id="overview" class="active">
-      <h2>Visão Geral</h2>
+      <h2><svg class="icon icon-lg"><use href="#icon-chart"></use></svg> Visão Geral</h2>
 
       <div class="card-grid">
         <div class="card stat-card">
@@ -876,7 +1074,7 @@
 
     <!-- Quickstart Section -->
     <section id="quickstart">
-      <h2>🚀 Início Rápido</h2>
+      <h2><svg class="icon icon-lg"><use href="#icon-rocket"></use></svg> Início Rápido</h2>
 
       <div class="card">
         <h3>1. Conectar ao MCP Server</h3>
@@ -959,7 +1157,7 @@
 
     <!-- Tools Section -->
     <section id="tools">
-      <h2>🔧 Ferramentas Disponíveis</h2>
+      <h2><svg class="icon icon-lg"><use href="#icon-tool"></use></svg> Ferramentas Disponíveis</h2>
       <p style="color: var(--text-muted); margin-bottom: 20px;">Clique em uma categoria para expandir e ver todas as ferramentas.</p>
 
       <div id="tools-list-container">
@@ -973,7 +1171,7 @@
 
     <!-- Playground Section -->
     <section id="playground">
-      <h2>🧪 Playground</h2>
+      <h2><svg class="icon icon-lg"><use href="#icon-flask"></use></svg> Playground</h2>
       <p style="color: var(--text-muted); margin-bottom: 20px;">Teste as ferramentas do MCP Server diretamente aqui.</p>
 
       <div class="playground-container">
@@ -1050,7 +1248,7 @@
 
     <!-- API Section -->
     <section id="api">
-      <h2>📡 API Reference</h2>
+      <h2><svg class="icon icon-lg"><use href="#icon-server"></use></svg> API Reference</h2>
 
       <div class="card">
         <h3>Autenticação</h3>
@@ -1114,12 +1312,12 @@
 
   <footer>
     <div class="container">
-      <p>SGP MCP Server v1.0.0 | Desenvolvido com ❤️ para provedores de internet</p>
-      <p style="margin-top: 8px; font-size: 0.8rem;">Powered by <a href="https://papervines.digital" target="_blank">Paper Vines Digital</a></p>
+      <p>SGP MCP Server v1.0.0 | Desenvolvido para provedores de internet</p>
+      <p style="margin-top: 6px;">Powered by <a href="https://papervines.digital" target="_blank">Paper Vines Digital</a></p>
       <div class="footer-links">
-        <a href="https://github.com/thiagojbs/mcp-sgp" target="_blank">📦 GitHub</a>
-        <a href="https://doc.papervines.digital" target="_blank">📚 Documentação</a>
-        <a href="https://documenter.getpostman.com/view/6682240/2sB34hHg2V" target="_blank">🔗 API SGP</a>
+        <a href="https://github.com/thiagojbs/mcp-sgp" target="_blank"><svg class="icon icon-sm"><use href="#icon-github"></use></svg> GitHub</a>
+        <a href="https://doc.papervines.digital" target="_blank"><svg class="icon icon-sm"><use href="#icon-book"></use></svg> Documentação</a>
+        <a href="https://documenter.getpostman.com/view/6682240/2sB34hHg2V" target="_blank"><svg class="icon icon-sm"><use href="#icon-link"></use></svg> API SGP</a>
       </div>
     </div>
   </footer>
@@ -1147,24 +1345,24 @@
       alert('Copiado!');
     }
 
-    // Tools data
+    // Tools data - using SVG icon IDs
     const toolsData = {
       "Configuração": {
-        icon: "⚙️",
+        icon: "settings",
         tools: [
           { name: "sgp_configurar", desc: "Configura as credenciais do SGP (CHAMAR PRIMEIRO)" },
           { name: "sgp_status_conexao", desc: "Verifica status da conexão com o SGP" }
         ]
       },
       "Clientes": {
-        icon: "👥",
+        icon: "users",
         tools: [
           { name: "sgp_consultar_cliente", desc: "Consulta clientes por CPF/CNPJ, telefone ou nome" },
           { name: "sgp_detalhes_cliente", desc: "Retorna detalhes completos de um cliente" }
         ]
       },
       "Contratos": {
-        icon: "📄",
+        icon: "file",
         tools: [
           { name: "sgp_listar_contratos", desc: "Lista contratos com filtros" },
           { name: "sgp_detalhes_contrato", desc: "Detalhes de um contrato" },
@@ -1177,7 +1375,7 @@
         ]
       },
       "Faturas": {
-        icon: "💰",
+        icon: "dollar",
         tools: [
           { name: "sgp_listar_faturas", desc: "Lista faturas com filtros" },
           { name: "sgp_detalhes_fatura", desc: "Detalhes de uma fatura" },
@@ -1190,7 +1388,7 @@
         ]
       },
       "Chamados": {
-        icon: "🎫",
+        icon: "ticket",
         tools: [
           { name: "sgp_listar_chamados", desc: "Lista chamados com filtros" },
           { name: "sgp_detalhes_chamado", desc: "Detalhes de um chamado" },
@@ -1219,7 +1417,7 @@
         ]
       },
       "Ordens de Serviço": {
-        icon: "🔧",
+        icon: "clipboard",
         tools: [
           { name: "sgp_listar_ordens_servico", desc: "Lista OS com filtros" },
           { name: "sgp_detalhes_ordem_servico", desc: "Detalhes de uma OS" },
@@ -1249,7 +1447,7 @@
         ]
       },
       "FTTH": {
-        icon: "🌐",
+        icon: "globe",
         tools: [
           { name: "sgp_listar_onus", desc: "Lista ONUs" },
           { name: "sgp_detalhes_onu", desc: "Detalhes de ONU" },
@@ -1278,7 +1476,7 @@
         ]
       },
       "Estoque": {
-        icon: "📦",
+        icon: "box",
         tools: [
           { name: "sgp_listar_produtos", desc: "Lista produtos" },
           { name: "sgp_detalhes_produto", desc: "Detalhes de produto" },
@@ -1307,7 +1505,7 @@
         ]
       },
       "RADIUS": {
-        icon: "📡",
+        icon: "wifi",
         tools: [
           { name: "sgp_listar_usuarios_radius", desc: "Lista usuários RADIUS" },
           { name: "sgp_detalhes_usuario_radius", desc: "Detalhes de usuário" },
@@ -1335,7 +1533,7 @@
         ]
       },
       "Remessa/Retorno": {
-        icon: "🏦",
+        icon: "bank",
         tools: [
           { name: "sgp_gerar_remessa", desc: "Gera arquivo de remessa CNAB" },
           { name: "sgp_listar_remessas", desc: "Lista remessas geradas" },
@@ -1350,7 +1548,7 @@
         ]
       },
       "Termos de Aceite": {
-        icon: "📋",
+        icon: "scroll",
         tools: [
           { name: "sgp_listar_termos", desc: "Lista termos de aceite" },
           { name: "sgp_detalhes_termo", desc: "Detalhes de um termo" },
@@ -1370,7 +1568,7 @@
         ]
       },
       "URA": {
-        icon: "📞",
+        icon: "phone",
         tools: [
           { name: "sgp_ura_consultar_cliente", desc: "Consulta cliente pela URA" },
           { name: "sgp_ura_consultar_contrato", desc: "Consulta contrato pela URA" },
@@ -1387,7 +1585,7 @@
         ]
       },
       "Pré-Cadastros": {
-        icon: "📝",
+        icon: "edit",
         tools: [
           { name: "sgp_listar_pre_cadastros", desc: "Lista pré-cadastros" },
           { name: "sgp_detalhes_pre_cadastro", desc: "Detalhes de pré-cadastro" },
@@ -1409,7 +1607,7 @@
         ]
       },
       "Central do Assinante": {
-        icon: "👤",
+        icon: "user",
         tools: [
           { name: "central_contratos_listar", desc: "Lista contratos do assinante" },
           { name: "central_contrato_detalhes", desc: "Detalhes do contrato" },
@@ -1429,7 +1627,7 @@
         ]
       },
       "Outros": {
-        icon: "🔹",
+        icon: "more",
         tools: [
           { name: "sgp_listar_cidades", desc: "Lista cidades" },
           { name: "sgp_listar_estados", desc: "Lista estados" },
@@ -1458,12 +1656,12 @@
         totalTools += data.tools.length;
         html += `
           <div class="tools-category">
-            <div class="category-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
-              <span class="category-icon">${data.icon}</span>
+            <div class="category-header" onclick="toggleToolsList(this)">
+              <span class="category-icon"><svg class="icon"><use href="#icon-${data.icon}"></use></svg></span>
               <span class="category-title">${category}</span>
               <span class="category-count">${data.tools.length}</span>
             </div>
-            <div class="tools-list" style="display: none;">
+            <div class="tools-list">
               ${data.tools.map(tool => `
                 <div class="tool-item" onclick="selectTool('${tool.name}')">
                   <div class="tool-name">${tool.name}</div>
@@ -1488,6 +1686,12 @@
 
       container.innerHTML = html;
       document.getElementById('tools-count').textContent = totalTools;
+    }
+
+    // Toggle tools list with animation
+    function toggleToolsList(header) {
+      const toolsList = header.nextElementSibling;
+      toolsList.classList.toggle('open');
     }
 
     // Select tool
