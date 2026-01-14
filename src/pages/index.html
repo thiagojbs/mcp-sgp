@@ -5,19 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SGP MCP Server - Documentação e Playground</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #f6821f;
-      --primary-dark: #e5720e;
+      --primary: #8B5CF6;
+      --primary-light: #A78BFA;
+      --primary-dark: #7C3AED;
+      --primary-bg: rgba(139, 92, 246, 0.08);
       --secondary: #1a1a2e;
-      --bg: #0f0f1a;
-      --card-bg: #1a1a2e;
-      --text: #e0e0e0;
-      --text-muted: #888;
-      --success: #10b981;
-      --error: #ef4444;
-      --warning: #f59e0b;
-      --border: #2a2a3e;
+      --accent: #F97316;
+      --accent-light: #FB923C;
+      --bg: #FAFAFA;
+      --bg-white: #FFFFFF;
+      --card-bg: #FFFFFF;
+      --text: #1F2937;
+      --text-secondary: #4B5563;
+      --text-muted: #6B7280;
+      --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.1);
+      --error: #EF4444;
+      --error-bg: rgba(239, 68, 68, 0.1);
+      --warning: #F59E0B;
+      --border: #E5E7EB;
+      --border-light: #F3F4F6;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
     }
 
     * {
@@ -27,47 +44,67 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
+      font-size: 15px;
     }
 
     .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
     }
 
-    /* Header */
+    /* Header - Paper Vines Style */
     header {
-      background: linear-gradient(135deg, var(--secondary) 0%, var(--bg) 100%);
+      background: var(--bg-white);
       border-bottom: 1px solid var(--border);
-      padding: 40px 0;
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .header-content {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 20px;
       flex-wrap: wrap;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
     .logo {
-      font-size: 48px;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: var(--primary-bg);
+      border-radius: var(--radius);
     }
 
     .header-text h1 {
-      font-size: 2.5rem;
-      background: linear-gradient(90deg, var(--primary), #ff9f43);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .header-text h1 span {
+      color: var(--primary);
     }
 
     .header-text p {
       color: var(--text-muted);
-      font-size: 1.1rem;
+      font-size: 0.875rem;
     }
 
     .status-badge {
@@ -75,12 +112,11 @@
       align-items: center;
       gap: 8px;
       padding: 8px 16px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid var(--success);
-      border-radius: 20px;
+      background: var(--success-bg);
+      border-radius: 24px;
       color: var(--success);
-      font-size: 0.9rem;
-      margin-top: 15px;
+      font-size: 0.875rem;
+      font-weight: 500;
     }
 
     .status-dot {
@@ -92,47 +128,54 @@
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
     }
 
-    /* Navigation */
+    /* Navigation - Paper Vines Style */
     nav {
-      background: var(--card-bg);
+      background: var(--bg-white);
       border-bottom: 1px solid var(--border);
       position: sticky;
-      top: 0;
-      z-index: 100;
+      top: 88px;
+      z-index: 99;
     }
 
     .nav-links {
       display: flex;
-      gap: 10px;
-      padding: 15px 0;
+      gap: 8px;
+      padding: 16px 0;
       overflow-x: auto;
     }
 
     .nav-link {
       padding: 10px 20px;
       background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
       text-decoration: none;
       white-space: nowrap;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
       cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
     }
 
-    .nav-link:hover, .nav-link.active {
+    .nav-link:hover {
+      background: var(--primary-bg);
+      color: var(--primary);
+    }
+
+    .nav-link.active {
       background: var(--primary);
-      border-color: var(--primary);
       color: white;
     }
 
     /* Main */
     main {
       padding: 40px 0;
+      min-height: calc(100vh - 300px);
     }
 
     section {
@@ -150,65 +193,144 @@
     }
 
     h2 {
-      font-size: 1.8rem;
-      margin-bottom: 20px;
+      font-size: 1.75rem;
+      margin-bottom: 24px;
       color: var(--primary);
+      font-weight: 700;
     }
 
     h3 {
-      font-size: 1.3rem;
-      margin: 25px 0 15px;
+      font-size: 1.125rem;
+      margin: 24px 0 12px;
       color: var(--text);
+      font-weight: 600;
     }
 
-    /* Cards */
+    p {
+      color: var(--text-secondary);
+    }
+
+    /* Cards - Paper Vines Style */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 25px;
+      border-radius: var(--radius-lg);
+      padding: 28px;
       margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow);
     }
 
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 20px;
+      margin-bottom: 32px;
     }
 
     .stat-card {
       text-align: center;
-      padding: 30px;
+      padding: 32px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .stat-card:nth-child(2) {
+      border-left-color: var(--success);
+    }
+
+    .stat-card:nth-child(3) {
+      border-left-color: var(--accent);
     }
 
     .stat-number {
       font-size: 3rem;
-      font-weight: bold;
+      font-weight: 700;
       color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-card:nth-child(2) .stat-number {
+      color: var(--success);
+    }
+
+    .stat-card:nth-child(3) .stat-number {
+      color: var(--accent);
     }
 
     .stat-label {
       color: var(--text-muted);
-      margin-top: 5px;
+      margin-top: 8px;
+      font-weight: 500;
     }
 
-    /* Code blocks */
+    /* Feature list */
+    .feature-list {
+      list-style: none;
+      margin: 16px 0;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    .feature-list li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-list li::before {
+      content: "✓";
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: var(--success-bg);
+      color: var(--success);
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .feature-list li strong {
+      color: var(--text);
+    }
+
+    /* Code blocks - Paper Vines Style */
     pre, code {
-      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
-      background: #0a0a12;
-      border-radius: 8px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+      border-radius: var(--radius-sm);
     }
 
     pre {
+      background: #1E1E2E;
       padding: 20px;
       overflow-x: auto;
-      border: 1px solid var(--border);
-      margin: 15px 0;
+      border: none;
+      margin: 16px 0;
+      color: #E0E0E0;
     }
 
     code {
-      padding: 2px 6px;
-      font-size: 0.9em;
+      background: var(--primary-bg);
+      color: var(--primary);
+      padding: 3px 8px;
+      font-size: 0.875em;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
     }
 
     .code-block {
@@ -217,67 +339,82 @@
 
     .copy-btn {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      padding: 5px 10px;
-      background: var(--border);
+      top: 12px;
+      right: 12px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.1);
       border: none;
-      border-radius: 4px;
-      color: var(--text);
+      border-radius: var(--radius-sm);
+      color: #E0E0E0;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
+      transition: background 0.2s;
     }
 
     .copy-btn:hover {
       background: var(--primary);
     }
 
-    /* Tools list */
+    /* Tools list - Paper Vines Style */
     .tools-category {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
     }
 
     .category-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 15px;
-      background: var(--secondary);
-      border-radius: 8px 8px 0 0;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--bg-white);
       cursor: pointer;
+      transition: background 0.2s;
+      border-left: 4px solid var(--primary);
     }
 
     .category-header:hover {
-      background: #252540;
+      background: var(--primary-bg);
     }
 
     .category-icon {
-      font-size: 1.5rem;
+      font-size: 1.25rem;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary-bg);
+      border-radius: var(--radius-sm);
     }
 
     .category-title {
       flex: 1;
       font-weight: 600;
+      color: var(--text);
     }
 
     .category-count {
       background: var(--primary);
-      padding: 2px 10px;
-      border-radius: 12px;
-      font-size: 0.8rem;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
 
     .tools-list {
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 8px 8px;
+      border-top: 1px solid var(--border);
     }
 
     .tool-item {
-      padding: 15px 20px;
-      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-light);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
+      margin-left: 4px;
     }
 
     .tool-item:last-child {
@@ -285,26 +422,29 @@
     }
 
     .tool-item:hover {
-      background: rgba(246, 130, 31, 0.1);
+      background: var(--primary-bg);
+      margin-left: 0;
+      border-left: 4px solid var(--primary);
     }
 
     .tool-name {
-      font-family: monospace;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--primary);
       font-weight: 600;
+      font-size: 0.9rem;
     }
 
     .tool-desc {
       color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-top: 5px;
+      font-size: 0.875rem;
+      margin-top: 4px;
     }
 
-    /* Playground */
+    /* Playground - Paper Vines Style */
     .playground-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 24px;
     }
 
     @media (max-width: 900px) {
@@ -313,152 +453,214 @@
       }
     }
 
+    .playground-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
     .playground-section h3 {
       margin-top: 0;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 5px;
-      color: var(--text-muted);
-      font-size: 0.9rem;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
     }
 
     input, select, textarea {
       width: 100%;
-      padding: 12px;
+      padding: 12px 16px;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       color: var(--text);
-      font-size: 1rem;
+      font-size: 0.9375rem;
       font-family: inherit;
+      transition: all 0.2s;
     }
 
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-bg);
     }
 
     textarea {
       min-height: 150px;
-      font-family: monospace;
+      font-family: 'JetBrains Mono', monospace;
       resize: vertical;
+      font-size: 0.875rem;
     }
 
     button {
       padding: 12px 24px;
       background: var(--primary);
       border: none;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       color: white;
-      font-size: 1rem;
+      font-size: 0.9375rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
     button:hover {
       background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
     button:disabled {
       background: var(--border);
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     .btn-secondary {
-      background: var(--secondary);
+      background: var(--bg);
       border: 1px solid var(--border);
+      color: var(--text-secondary);
     }
 
     .btn-secondary:hover {
-      background: #252540;
+      background: var(--border-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+    }
+
+    .btn-accent:hover {
+      background: var(--accent-light);
     }
 
     .response-area {
-      background: #0a0a12;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      background: #1E1E2E;
+      border: none;
+      border-radius: var(--radius-sm);
       padding: 20px;
       min-height: 300px;
       max-height: 500px;
       overflow: auto;
-      font-family: monospace;
-      font-size: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
       white-space: pre-wrap;
       word-break: break-word;
+      color: #E0E0E0;
     }
 
     .response-success {
-      border-color: var(--success);
+      border: 2px solid var(--success);
     }
 
     .response-error {
-      border-color: var(--error);
+      border: 2px solid var(--error);
     }
 
-    /* Endpoints table */
+    /* Endpoints table - Paper Vines Style */
     .endpoints-table {
       width: 100%;
       border-collapse: collapse;
       margin: 20px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
 
     .endpoints-table th,
     .endpoints-table td {
-      padding: 12px 15px;
+      padding: 14px 18px;
       text-align: left;
       border-bottom: 1px solid var(--border);
     }
 
     .endpoints-table th {
-      background: var(--secondary);
+      background: var(--primary-bg);
       color: var(--primary);
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .endpoints-table tr:last-child td {
+      border-bottom: none;
     }
 
     .endpoints-table tr:hover td {
-      background: rgba(246, 130, 31, 0.05);
+      background: var(--primary-bg);
     }
 
     .method-badge {
       display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
     }
 
-    .method-get { background: #10b98133; color: #10b981; }
-    .method-post { background: #3b82f633; color: #3b82f6; }
+    .method-get { background: var(--success-bg); color: var(--success); }
+    .method-post { background: var(--primary-bg); color: var(--primary); }
 
-    /* Footer */
+    /* Footer - Paper Vines Style */
     footer {
+      background: var(--bg-white);
       border-top: 1px solid var(--border);
-      padding: 30px 0;
-      margin-top: 40px;
+      padding: 40px 0;
+      margin-top: 60px;
       text-align: center;
+    }
+
+    footer p {
       color: var(--text-muted);
+      font-size: 0.875rem;
     }
 
     footer a {
       color: var(--primary);
       text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
     }
 
     footer a:hover {
-      text-decoration: underline;
+      color: var(--primary-dark);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 16px;
+    }
+
+    .footer-links a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     /* Loading spinner */
     .spinner {
       display: inline-block;
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       border: 2px solid rgba(255,255,255,0.3);
       border-radius: 50%;
       border-top-color: white;
@@ -472,18 +674,25 @@
     /* Tabs */
     .tabs {
       display: flex;
-      gap: 5px;
-      margin-bottom: 15px;
+      gap: 8px;
+      margin-bottom: 20px;
     }
 
     .tab {
-      padding: 8px 16px;
+      padding: 10px 18px;
       background: transparent;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      border-color: var(--primary);
+      color: var(--primary);
     }
 
     .tab.active {
@@ -491,20 +700,80 @@
       border-color: var(--primary);
       color: white;
     }
+
+    /* Info boxes */
+    .info-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      background: var(--primary-bg);
+      border-radius: var(--radius-sm);
+      border-left: 4px solid var(--primary);
+      margin: 16px 0;
+    }
+
+    .info-box.warning {
+      background: rgba(245, 158, 11, 0.1);
+      border-left-color: var(--warning);
+    }
+
+    .info-box.success {
+      background: var(--success-bg);
+      border-left-color: var(--success);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+      }
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--border-light);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="container">
       <div class="header-content">
-        <div class="logo">🔌</div>
-        <div class="header-text">
-          <h1>SGP MCP Server</h1>
-          <p>Model Context Protocol Server para integração com o ERP SGP</p>
-          <div class="status-badge">
-            <span class="status-dot"></span>
-            <span>Online - Multi-Tenant</span>
+        <div class="header-left">
+          <div class="logo">🔌</div>
+          <div class="header-text">
+            <h1>SGP <span>MCP Server</span></h1>
+            <p>Model Context Protocol para integração com o ERP SGP</p>
           </div>
+        </div>
+        <div class="status-badge">
+          <span class="status-dot"></span>
+          <span>Online - Multi-Tenant</span>
         </div>
       </div>
     </div>
@@ -547,7 +816,7 @@
         <p>Um servidor MCP (Model Context Protocol) que permite que assistentes de IA, como o Claude, interajam diretamente com o sistema SGP (Sistema de Gestão para Provedores de Internet).</p>
 
         <h3>Funcionalidades</h3>
-        <ul style="margin-left: 20px; color: var(--text-muted);">
+        <ul class="feature-list">
           <li><strong>Multi-Tenant:</strong> Suporta múltiplos SGPs - cada usuário configura suas próprias credenciais</li>
           <li><strong>Clientes e Contratos:</strong> Consulta, listagem e detalhes completos</li>
           <li><strong>Financeiro:</strong> Faturas, boletos, remessa/retorno bancário</li>
@@ -559,7 +828,8 @@
           <li><strong>Termos de Aceite:</strong> Gestão de termos, versões e aceites de clientes</li>
           <li><strong>URA:</strong> Integração com atendimento telefônico automatizado</li>
           <li><strong>Pré-Cadastros:</strong> Gestão de leads e prospectos</li>
-          <li><strong>Outros:</strong> Cidades, estados, CEP, logs, notificações, configurações e relatórios</li>
+          <li><strong>Central do Assinante:</strong> Portal de autoatendimento para clientes finais</li>
+          <li><strong>Outros:</strong> Cidades, estados, CEP, logs, notificações e relatórios</li>
         </ul>
       </div>
 
@@ -845,10 +1115,12 @@
   <footer>
     <div class="container">
       <p>SGP MCP Server v1.0.0 | Desenvolvido com ❤️ para provedores de internet</p>
-      <p style="margin-top: 10px;">
-        <a href="https://github.com/thiagojbs/mcp-sgp" target="_blank">GitHub</a> •
-        <a href="https://documenter.getpostman.com/view/6682240/UzXKVyUs" target="_blank">Documentação SGP</a>
-      </p>
+      <p style="margin-top: 8px; font-size: 0.8rem;">Powered by <a href="https://papervines.digital" target="_blank">Paper Vines Digital</a></p>
+      <div class="footer-links">
+        <a href="https://github.com/thiagojbs/mcp-sgp" target="_blank">📦 GitHub</a>
+        <a href="https://doc.papervines.digital" target="_blank">📚 Documentação</a>
+        <a href="https://documenter.getpostman.com/view/6682240/2sB34hHg2V" target="_blank">🔗 API SGP</a>
+      </div>
     </div>
   </footer>
 
