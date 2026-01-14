@@ -1,0 +1,20 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "mcp-sgp"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Variáveis de ambiente (configure antes do deploy)
+# Você pode configurar via: wrangler secret put SGP_API_URL
+# ou no dashboard da Cloudflare
+
+[vars]
+# URL base da API do SGP (ambiente de produção)
+# SGP_API_URL = "https://seu-provedor.sgp.net.br/api"
+
+# Para ambiente de demonstração, use:
+SGP_API_URL = "https://demo.sgp.net.br/api"
+
+# Observabilidade
+[observability]
+enabled = true
