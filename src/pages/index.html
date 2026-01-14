@@ -529,11 +529,11 @@
 
       <div class="card-grid">
         <div class="card stat-card">
-          <div class="stat-number" id="tools-count">52</div>
+          <div class="stat-number" id="tools-count">200</div>
           <div class="stat-label">Ferramentas Disponíveis</div>
         </div>
         <div class="card stat-card">
-          <div class="stat-number">8</div>
+          <div class="stat-number">13</div>
           <div class="stat-label">Categorias</div>
         </div>
         <div class="card stat-card">
@@ -549,13 +549,17 @@
         <h3>Funcionalidades</h3>
         <ul style="margin-left: 20px; color: var(--text-muted);">
           <li><strong>Multi-Tenant:</strong> Suporta múltiplos SGPs - cada usuário configura suas próprias credenciais</li>
-          <li><strong>Clientes e Contratos:</strong> Consulta, listagem e detalhes</li>
-          <li><strong>Financeiro:</strong> Faturas, boletos, segunda via</li>
-          <li><strong>Suporte:</strong> Abertura e gestão de chamados</li>
-          <li><strong>Ordens de Serviço:</strong> Criação, agendamento, transferência</li>
-          <li><strong>FTTH:</strong> Gerenciamento de ONUs, OLTs, caixas</li>
-          <li><strong>Estoque:</strong> Produtos, movimentações, inventário</li>
-          <li><strong>RADIUS:</strong> Usuários, sessões, bloqueios</li>
+          <li><strong>Clientes e Contratos:</strong> Consulta, listagem e detalhes completos</li>
+          <li><strong>Financeiro:</strong> Faturas, boletos, remessa/retorno bancário</li>
+          <li><strong>Suporte:</strong> CRUD completo de chamados, categorias, prioridades e anexos</li>
+          <li><strong>Ordens de Serviço:</strong> CRUD completo, agendamento, técnicos e anexos</li>
+          <li><strong>FTTH:</strong> CRUD de ONUs, OLTs, caixas e splitters</li>
+          <li><strong>Estoque:</strong> Produtos, movimentações, fornecedores e inventário</li>
+          <li><strong>RADIUS:</strong> Usuários, grupos, NAS, sessões e accounting</li>
+          <li><strong>Termos de Aceite:</strong> Gestão de termos, versões e aceites de clientes</li>
+          <li><strong>URA:</strong> Integração com atendimento telefônico automatizado</li>
+          <li><strong>Pré-Cadastros:</strong> Gestão de leads e prospectos</li>
+          <li><strong>Outros:</strong> Cidades, estados, CEP, logs, notificações, configurações e relatórios</li>
         </ul>
       </div>
 
@@ -892,6 +896,11 @@
         tools: [
           { name: "sgp_listar_contratos", desc: "Lista contratos com filtros" },
           { name: "sgp_detalhes_contrato", desc: "Detalhes de um contrato" },
+          { name: "sgp_criar_contrato", desc: "Cria novo contrato" },
+          { name: "sgp_atualizar_contrato", desc: "Atualiza contrato" },
+          { name: "sgp_suspender_contrato", desc: "Suspende contrato" },
+          { name: "sgp_reativar_contrato", desc: "Reativa contrato" },
+          { name: "sgp_cancelar_contrato", desc: "Cancela contrato" },
           { name: "sgp_consultar_contrato_resumido", desc: "Consulta rápida via URA" }
         ]
       },
@@ -904,7 +913,8 @@
           { name: "sgp_faturas_contrato", desc: "Faturas de um contrato" },
           { name: "sgp_listar_boletos", desc: "Lista boletos" },
           { name: "sgp_detalhes_boleto", desc: "Detalhes de um boleto" },
-          { name: "sgp_gerar_boleto", desc: "Gera novo boleto" }
+          { name: "sgp_gerar_boleto", desc: "Gera novo boleto" },
+          { name: "sgp_cancelar_boleto", desc: "Cancela boleto" }
         ]
       },
       "Chamados": {
@@ -913,11 +923,27 @@
           { name: "sgp_listar_chamados", desc: "Lista chamados com filtros" },
           { name: "sgp_detalhes_chamado", desc: "Detalhes de um chamado" },
           { name: "sgp_abrir_chamado", desc: "Abre novo chamado" },
+          { name: "sgp_atualizar_chamado", desc: "Atualiza chamado" },
+          { name: "sgp_excluir_chamado", desc: "Exclui chamado" },
+          { name: "sgp_cancelar_chamado", desc: "Cancela chamado" },
+          { name: "sgp_iniciar_atendimento_chamado", desc: "Inicia atendimento" },
           { name: "sgp_interagir_chamado", desc: "Adiciona interação" },
           { name: "sgp_atribuir_chamado", desc: "Atribui a atendente" },
           { name: "sgp_finalizar_chamado", desc: "Finaliza atendimento" },
+          { name: "sgp_listar_interacoes_chamado", desc: "Lista interações" },
+          { name: "sgp_adicionar_anexo_chamado", desc: "Adiciona anexo" },
+          { name: "sgp_listar_anexos_chamado", desc: "Lista anexos" },
+          { name: "sgp_remover_anexo_chamado", desc: "Remove anexo" },
           { name: "sgp_listar_categorias_chamado", desc: "Lista categorias" },
-          { name: "sgp_listar_interacoes_chamado", desc: "Lista interações" }
+          { name: "sgp_cadastrar_categoria_chamado", desc: "Cadastra categoria" },
+          { name: "sgp_detalhes_categoria_chamado", desc: "Detalhes categoria" },
+          { name: "sgp_atualizar_categoria_chamado", desc: "Atualiza categoria" },
+          { name: "sgp_excluir_categoria_chamado", desc: "Exclui categoria" },
+          { name: "sgp_listar_prioridades_chamado", desc: "Lista prioridades" },
+          { name: "sgp_cadastrar_prioridade_chamado", desc: "Cadastra prioridade" },
+          { name: "sgp_detalhes_prioridade_chamado", desc: "Detalhes prioridade" },
+          { name: "sgp_atualizar_prioridade_chamado", desc: "Atualiza prioridade" },
+          { name: "sgp_excluir_prioridade_chamado", desc: "Exclui prioridade" }
         ]
       },
       "Ordens de Serviço": {
@@ -926,12 +952,26 @@
           { name: "sgp_listar_ordens_servico", desc: "Lista OS com filtros" },
           { name: "sgp_detalhes_ordem_servico", desc: "Detalhes de uma OS" },
           { name: "sgp_criar_ordem_servico", desc: "Cria nova OS" },
+          { name: "sgp_atualizar_ordem_servico", desc: "Atualiza OS" },
+          { name: "sgp_excluir_ordem_servico", desc: "Exclui OS" },
+          { name: "sgp_cancelar_ordem_servico", desc: "Cancela OS" },
+          { name: "sgp_iniciar_ordem_servico", desc: "Inicia execução" },
+          { name: "sgp_pausar_ordem_servico", desc: "Pausa execução" },
+          { name: "sgp_retomar_ordem_servico", desc: "Retoma execução" },
+          { name: "sgp_finalizar_ordem_servico", desc: "Finaliza OS" },
           { name: "sgp_atualizar_status_ordem", desc: "Atualiza status" },
           { name: "sgp_reagendar_ordem", desc: "Reagenda OS" },
           { name: "sgp_transferir_ordem", desc: "Transfere para técnico" },
           { name: "sgp_comentario_ordem", desc: "Adiciona comentário" },
           { name: "sgp_listar_comentarios_ordem", desc: "Lista comentários" },
+          { name: "sgp_adicionar_anexo_os", desc: "Adiciona anexo" },
+          { name: "sgp_listar_anexos_os", desc: "Lista anexos" },
+          { name: "sgp_remover_anexo_os", desc: "Remove anexo" },
           { name: "sgp_listar_tipos_os", desc: "Lista tipos de OS" },
+          { name: "sgp_cadastrar_tipo_os", desc: "Cadastra tipo" },
+          { name: "sgp_detalhes_tipo_os", desc: "Detalhes tipo" },
+          { name: "sgp_atualizar_tipo_os", desc: "Atualiza tipo" },
+          { name: "sgp_excluir_tipo_os", desc: "Exclui tipo" },
           { name: "sgp_listar_tecnicos", desc: "Lista técnicos" },
           { name: "sgp_agenda_tecnico", desc: "Agenda de técnico" }
         ]
@@ -941,16 +981,28 @@
         tools: [
           { name: "sgp_listar_onus", desc: "Lista ONUs" },
           { name: "sgp_detalhes_onu", desc: "Detalhes de ONU" },
+          { name: "sgp_cadastrar_onu", desc: "Cadastra ONU" },
+          { name: "sgp_atualizar_onu", desc: "Atualiza ONU" },
+          { name: "sgp_excluir_onu", desc: "Exclui ONU" },
           { name: "sgp_provisionar_onu", desc: "Provisiona ONU" },
           { name: "sgp_desprovisionar_onu", desc: "Desprovisiona ONU" },
           { name: "sgp_reiniciar_onu", desc: "Reinicia ONU" },
           { name: "sgp_status_onu", desc: "Status em tempo real" },
           { name: "sgp_listar_olts", desc: "Lista OLTs" },
           { name: "sgp_detalhes_olt", desc: "Detalhes de OLT" },
+          { name: "sgp_cadastrar_olt", desc: "Cadastra OLT" },
+          { name: "sgp_atualizar_olt", desc: "Atualiza OLT" },
+          { name: "sgp_excluir_olt", desc: "Exclui OLT" },
           { name: "sgp_listar_caixas", desc: "Lista caixas" },
           { name: "sgp_detalhes_caixa", desc: "Detalhes de caixa" },
+          { name: "sgp_cadastrar_caixa", desc: "Cadastra caixa" },
+          { name: "sgp_atualizar_caixa", desc: "Atualiza caixa" },
+          { name: "sgp_excluir_caixa", desc: "Exclui caixa" },
           { name: "sgp_listar_splitters", desc: "Lista splitters" },
-          { name: "sgp_detalhes_splitter", desc: "Detalhes de splitter" }
+          { name: "sgp_detalhes_splitter", desc: "Detalhes de splitter" },
+          { name: "sgp_cadastrar_splitter", desc: "Cadastra splitter" },
+          { name: "sgp_atualizar_splitter", desc: "Atualiza splitter" },
+          { name: "sgp_excluir_splitter", desc: "Exclui splitter" }
         ]
       },
       "Estoque": {
@@ -958,12 +1010,28 @@
         tools: [
           { name: "sgp_listar_produtos", desc: "Lista produtos" },
           { name: "sgp_detalhes_produto", desc: "Detalhes de produto" },
+          { name: "sgp_cadastrar_produto", desc: "Cadastra produto" },
+          { name: "sgp_atualizar_produto", desc: "Atualiza produto" },
+          { name: "sgp_excluir_produto", desc: "Exclui produto" },
           { name: "sgp_listar_movimentacoes", desc: "Lista movimentações" },
+          { name: "sgp_detalhes_movimentacao", desc: "Detalhes movimentação" },
           { name: "sgp_cadastrar_movimentacao", desc: "Registra entrada/saída" },
+          { name: "sgp_cancelar_movimentacao", desc: "Cancela movimentação" },
           { name: "sgp_listar_fornecedores", desc: "Lista fornecedores" },
+          { name: "sgp_detalhes_fornecedor", desc: "Detalhes fornecedor" },
+          { name: "sgp_cadastrar_fornecedor", desc: "Cadastra fornecedor" },
+          { name: "sgp_atualizar_fornecedor", desc: "Atualiza fornecedor" },
+          { name: "sgp_excluir_fornecedor", desc: "Exclui fornecedor" },
           { name: "sgp_listar_categorias_estoque", desc: "Lista categorias" },
+          { name: "sgp_detalhes_categoria_estoque", desc: "Detalhes categoria" },
+          { name: "sgp_cadastrar_categoria_estoque", desc: "Cadastra categoria" },
+          { name: "sgp_atualizar_categoria_estoque", desc: "Atualiza categoria" },
+          { name: "sgp_excluir_categoria_estoque", desc: "Exclui categoria" },
           { name: "sgp_listar_inventarios", desc: "Lista inventários" },
-          { name: "sgp_detalhes_inventario", desc: "Detalhes de inventário" }
+          { name: "sgp_detalhes_inventario", desc: "Detalhes de inventário" },
+          { name: "sgp_iniciar_inventario", desc: "Inicia inventário" },
+          { name: "sgp_finalizar_inventario", desc: "Finaliza inventário" },
+          { name: "sgp_cancelar_inventario", desc: "Cancela inventário" }
         ]
       },
       "RADIUS": {
@@ -971,6 +1039,9 @@
         tools: [
           { name: "sgp_listar_usuarios_radius", desc: "Lista usuários RADIUS" },
           { name: "sgp_detalhes_usuario_radius", desc: "Detalhes de usuário" },
+          { name: "sgp_cadastrar_usuario_radius", desc: "Cadastra usuário" },
+          { name: "sgp_atualizar_usuario_radius", desc: "Atualiza usuário" },
+          { name: "sgp_excluir_usuario_radius", desc: "Exclui usuário" },
           { name: "sgp_bloquear_usuario_radius", desc: "Bloqueia usuário" },
           { name: "sgp_desbloquear_usuario_radius", desc: "Desbloqueia usuário" },
           { name: "sgp_resetar_senha_radius", desc: "Reseta senha" },
@@ -978,9 +1049,108 @@
           { name: "sgp_detalhes_sessao_radius", desc: "Detalhes de sessão" },
           { name: "sgp_encerrar_sessao_radius", desc: "Encerra sessão" },
           { name: "sgp_listar_grupos_radius", desc: "Lista grupos" },
+          { name: "sgp_detalhes_grupo_radius", desc: "Detalhes grupo" },
+          { name: "sgp_cadastrar_grupo_radius", desc: "Cadastra grupo" },
+          { name: "sgp_atualizar_grupo_radius", desc: "Atualiza grupo" },
+          { name: "sgp_excluir_grupo_radius", desc: "Exclui grupo" },
           { name: "sgp_listar_nas", desc: "Lista NAS" },
           { name: "sgp_detalhes_nas", desc: "Detalhes de NAS" },
-          { name: "sgp_listar_accounting_radius", desc: "Lista accounting" }
+          { name: "sgp_cadastrar_nas", desc: "Cadastra NAS" },
+          { name: "sgp_atualizar_nas", desc: "Atualiza NAS" },
+          { name: "sgp_excluir_nas", desc: "Exclui NAS" },
+          { name: "sgp_listar_accounting_radius", desc: "Lista accounting" },
+          { name: "sgp_detalhes_accounting_radius", desc: "Detalhes accounting" }
+        ]
+      },
+      "Remessa/Retorno": {
+        icon: "🏦",
+        tools: [
+          { name: "sgp_gerar_remessa", desc: "Gera arquivo de remessa CNAB" },
+          { name: "sgp_listar_remessas", desc: "Lista remessas geradas" },
+          { name: "sgp_download_remessa", desc: "Download arquivo remessa" },
+          { name: "sgp_processar_retorno", desc: "Processa arquivo de retorno" },
+          { name: "sgp_listar_retornos", desc: "Lista retornos processados" },
+          { name: "sgp_detalhes_retorno", desc: "Detalhes de retorno" },
+          { name: "sgp_listar_boletos_remessa", desc: "Boletos de uma remessa" },
+          { name: "sgp_gerar_boleto", desc: "Gera boleto individual" },
+          { name: "sgp_detalhes_boleto", desc: "Detalhes de boleto" },
+          { name: "sgp_cancelar_boleto", desc: "Cancela boleto" }
+        ]
+      },
+      "Termos de Aceite": {
+        icon: "📋",
+        tools: [
+          { name: "sgp_listar_termos", desc: "Lista termos de aceite" },
+          { name: "sgp_detalhes_termo", desc: "Detalhes de um termo" },
+          { name: "sgp_cadastrar_termo", desc: "Cadastra novo termo" },
+          { name: "sgp_atualizar_termo", desc: "Atualiza termo" },
+          { name: "sgp_excluir_termo", desc: "Exclui termo" },
+          { name: "sgp_listar_versoes_termo", desc: "Lista versões de termo" },
+          { name: "sgp_detalhes_versao_termo", desc: "Detalhes de versão" },
+          { name: "sgp_cadastrar_versao_termo", desc: "Cadastra versão" },
+          { name: "sgp_atualizar_versao_termo", desc: "Atualiza versão" },
+          { name: "sgp_ativar_versao_termo", desc: "Ativa versão do termo" },
+          { name: "sgp_listar_aceites_termo", desc: "Lista aceites de clientes" },
+          { name: "sgp_detalhes_aceite_termo", desc: "Detalhes de aceite" },
+          { name: "sgp_registrar_aceite_termo", desc: "Registra aceite" },
+          { name: "sgp_verificar_aceite_cliente", desc: "Verifica se cliente aceitou" },
+          { name: "sgp_revogar_aceite_termo", desc: "Revoga aceite" }
+        ]
+      },
+      "URA": {
+        icon: "📞",
+        tools: [
+          { name: "sgp_ura_consultar_cliente", desc: "Consulta cliente pela URA" },
+          { name: "sgp_ura_consultar_contrato", desc: "Consulta contrato pela URA" },
+          { name: "sgp_ura_listar_faturas", desc: "Lista faturas pela URA" },
+          { name: "sgp_ura_detalhes_fatura", desc: "Detalhes fatura pela URA" },
+          { name: "sgp_ura_abrir_chamado", desc: "Abre chamado pela URA" },
+          { name: "sgp_ura_consultar_chamado", desc: "Consulta chamado pela URA" },
+          { name: "sgp_ura_listar_chamados_cliente", desc: "Lista chamados do cliente" },
+          { name: "sgp_ura_registrar_atendimento", desc: "Registra atendimento URA" },
+          { name: "sgp_ura_consultar_atendimento", desc: "Consulta atendimento" },
+          { name: "sgp_ura_listar_atendimentos_cliente", desc: "Lista atendimentos" },
+          { name: "sgp_ura_listar_menu", desc: "Lista menu da URA" },
+          { name: "sgp_ura_status_filas", desc: "Status das filas" }
+        ]
+      },
+      "Pré-Cadastros": {
+        icon: "📝",
+        tools: [
+          { name: "sgp_listar_pre_cadastros", desc: "Lista pré-cadastros" },
+          { name: "sgp_detalhes_pre_cadastro", desc: "Detalhes de pré-cadastro" },
+          { name: "sgp_cadastrar_pre_cadastro", desc: "Cadastra lead/prospecto" },
+          { name: "sgp_atualizar_pre_cadastro", desc: "Atualiza pré-cadastro" },
+          { name: "sgp_excluir_pre_cadastro", desc: "Exclui pré-cadastro" },
+          { name: "sgp_converter_pre_cadastro", desc: "Converte em cliente" },
+          { name: "sgp_cancelar_pre_cadastro", desc: "Cancela pré-cadastro" },
+          { name: "sgp_listar_origens_pre_cadastro", desc: "Lista origens" },
+          { name: "sgp_detalhes_origem_pre_cadastro", desc: "Detalhes origem" },
+          { name: "sgp_cadastrar_origem_pre_cadastro", desc: "Cadastra origem" },
+          { name: "sgp_atualizar_origem_pre_cadastro", desc: "Atualiza origem" },
+          { name: "sgp_excluir_origem_pre_cadastro", desc: "Exclui origem" },
+          { name: "sgp_listar_status_pre_cadastro", desc: "Lista status" },
+          { name: "sgp_detalhes_status_pre_cadastro", desc: "Detalhes status" },
+          { name: "sgp_cadastrar_status_pre_cadastro", desc: "Cadastra status" },
+          { name: "sgp_atualizar_status_pre_cadastro", desc: "Atualiza status" },
+          { name: "sgp_excluir_status_pre_cadastro", desc: "Exclui status" }
+        ]
+      },
+      "Outros": {
+        icon: "🔹",
+        tools: [
+          { name: "sgp_listar_cidades", desc: "Lista cidades" },
+          { name: "sgp_listar_estados", desc: "Lista estados" },
+          { name: "sgp_consultar_cep", desc: "Consulta CEP" },
+          { name: "sgp_listar_logs", desc: "Lista logs do sistema" },
+          { name: "sgp_listar_notificacoes", desc: "Lista notificações" },
+          { name: "sgp_marcar_notificacao_lida", desc: "Marca notificação lida" },
+          { name: "sgp_marcar_todas_notificacoes_lidas", desc: "Marca todas lidas" },
+          { name: "sgp_listar_configuracoes", desc: "Lista configurações" },
+          { name: "sgp_obter_configuracao", desc: "Obtém configuração" },
+          { name: "sgp_atualizar_configuracao", desc: "Atualiza configuração" },
+          { name: "sgp_listar_relatorios", desc: "Lista relatórios" },
+          { name: "sgp_gerar_relatorio", desc: "Gera relatório" }
         ]
       }
     };
