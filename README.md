@@ -4,7 +4,7 @@ MCP Server para integração com o **SGP (Sistema de Gestão para Provedores)** 
 
 ## 🚀 Funcionalidades
 
-Este MCP Server expõe **50+ ferramentas** para que assistentes de IA possam interagir com o SGP:
+Este MCP Server expõe **237 ferramentas** (uma por endpoint da API oficial do SGP) + 2 utilitárias (`sgp_configurar`, `sgp_status_conexao`), geradas a partir da especificação canônica em [`docs/endpoint-map.md`](docs/endpoint-map.md) (derivada da collection oficial do Postman). Para que assistentes de IA possam interagir com o SGP:
 
 ### Clientes e Contratos
 - Consultar clientes por CPF/CNPJ, telefone ou nome
@@ -178,84 +178,33 @@ npx @anthropic/mcp-inspector http://localhost:8787/sse
 
 ## 📋 Lista de Ferramentas
 
-### Clientes
-- `sgp_consultar_cliente` - Consulta clientes por CPF/CNPJ, telefone ou nome
-- `sgp_detalhes_cliente` - Detalhes completos de um cliente
+As **237 tools** são geradas automaticamente a partir da especificação oficial
+(uma por endpoint real do SGP). A lista completa e detalhada — com método HTTP,
+caminho, parâmetros de caminho/query/corpo — está em
+[`docs/endpoint-map.md`](docs/endpoint-map.md).
 
-### Contratos
-- `sgp_listar_contratos` - Lista contratos com filtros
-- `sgp_detalhes_contrato` - Detalhes de um contrato
-- `sgp_consultar_contrato_resumido` - Consulta rápida via URA
+Convenção de nomes: `sgp_<seção>_<ação>` (ex.: `sgp_ura_cliente_consultar`,
+`sgp_ftth_listar_onu`, `sgp_os_ordem_de_servico_criar`).
 
-### Faturas
-- `sgp_listar_faturas` - Lista faturas com filtros
-- `sgp_detalhes_fatura` - Detalhes de uma fatura
-- `sgp_segunda_via_fatura` - Gera segunda via
-- `sgp_faturas_contrato` - Faturas de um contrato (URA)
-- `sgp_listar_boletos` - Lista boletos
-- `sgp_detalhes_boleto` - Detalhes de um boleto
-- `sgp_gerar_boleto` - Gera novo boleto
+| Seção | Tools | Prefixo |
+|---|---|---|
+| Central Assinante | 33 | `sgp_central_*` |
+| URA | 69 | `sgp_ura_*` |
+| FTTH | 29 | `sgp_ftth_*` |
+| Estoque | 32 | `sgp_estoque_*` |
+| Ordem de Serviço | 26 | `sgp_os_*` |
+| CRM | 12 | `sgp_crm_*` |
+| Gerenciador CPE | 12 | `sgp_cpe_*` |
+| Suporte | 9 | `sgp_suporte_*` |
+| Pré-Cadastro | 5 | `sgp_precadastro_*` |
+| RADIUS | 5 | `sgp_radius_*` |
+| Remessa / Retorno | 2 | `sgp_remessa_*` |
+| Termo de Aceite | 2 | `sgp_termo_*` |
+| Outros | 1 | `sgp_outros_*` |
+| **Total** | **237** | + `sgp_configurar`, `sgp_status_conexao` |
 
-### Chamados
-- `sgp_listar_chamados` - Lista chamados com filtros
-- `sgp_detalhes_chamado` - Detalhes de um chamado
-- `sgp_abrir_chamado` - Abre novo chamado
-- `sgp_interagir_chamado` - Adiciona interação
-- `sgp_atribuir_chamado` - Atribui a atendente
-- `sgp_finalizar_chamado` - Finaliza atendimento
-- `sgp_listar_categorias_chamado` - Lista categorias
-- `sgp_listar_interacoes_chamado` - Histórico de interações
-
-### Ordens de Serviço
-- `sgp_listar_ordens_servico` - Lista OS com filtros
-- `sgp_detalhes_ordem_servico` - Detalhes de uma OS
-- `sgp_criar_ordem_servico` - Cria nova OS
-- `sgp_atualizar_status_ordem` - Atualiza status (iniciar, pausar, finalizar, etc.)
-- `sgp_reagendar_ordem` - Reagenda OS
-- `sgp_transferir_ordem` - Transfere para outro técnico
-- `sgp_comentario_ordem` - Adiciona comentário
-- `sgp_listar_comentarios_ordem` - Lista comentários
-- `sgp_listar_tipos_os` - Lista tipos de OS
-- `sgp_listar_tecnicos` - Lista técnicos
-- `sgp_agenda_tecnico` - Consulta agenda de técnico
-
-### FTTH
-- `sgp_listar_onus` - Lista ONUs
-- `sgp_detalhes_onu` - Detalhes de uma ONU
-- `sgp_provisionar_onu` - Provisiona ONU
-- `sgp_desprovisionar_onu` - Desprovisiona ONU
-- `sgp_reiniciar_onu` - Reinicia ONU
-- `sgp_status_onu` - Status em tempo real
-- `sgp_listar_olts` - Lista OLTs
-- `sgp_detalhes_olt` - Detalhes de uma OLT
-- `sgp_listar_caixas` - Lista caixas (CTO/CEO)
-- `sgp_detalhes_caixa` - Detalhes de uma caixa
-- `sgp_listar_splitters` - Lista splitters
-- `sgp_detalhes_splitter` - Detalhes de um splitter
-
-### Estoque
-- `sgp_listar_produtos` - Lista produtos
-- `sgp_detalhes_produto` - Detalhes de um produto
-- `sgp_listar_movimentacoes` - Lista movimentações
-- `sgp_cadastrar_movimentacao` - Registra entrada/saída
-- `sgp_listar_fornecedores` - Lista fornecedores
-- `sgp_listar_categorias_estoque` - Lista categorias
-- `sgp_listar_inventarios` - Lista inventários
-- `sgp_detalhes_inventario` - Detalhes de um inventário
-
-### RADIUS
-- `sgp_listar_usuarios_radius` - Lista usuários RADIUS
-- `sgp_detalhes_usuario_radius` - Detalhes de um usuário
-- `sgp_bloquear_usuario_radius` - Bloqueia usuário
-- `sgp_desbloquear_usuario_radius` - Desbloqueia usuário
-- `sgp_resetar_senha_radius` - Reseta senha
-- `sgp_listar_sessoes_radius` - Lista sessões
-- `sgp_detalhes_sessao_radius` - Detalhes de uma sessão
-- `sgp_encerrar_sessao_radius` - Encerra sessão
-- `sgp_listar_grupos_radius` - Lista grupos
-- `sgp_listar_nas` - Lista servidores NAS
-- `sgp_detalhes_nas` - Detalhes de um NAS
-- `sgp_listar_accounting_radius` - Histórico de accounting
+> Fonte da verdade: `docs/sgp-api-spec.postman_collection.json` → `src/spec/sgp-endpoints.ts`.
+> Para regenerar após uma atualização da API, reimporte a collection e rode o gerador.
 
 ## 📄 Licença
 

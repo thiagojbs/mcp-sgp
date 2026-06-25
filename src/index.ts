@@ -1,16 +1,12 @@
 /**
  * SGP MCP Server - Cloudflare Workers (Multi-Tenant)
  *
- * MCP Server para integração com o ERP SGP (Sistema de Gestão para Provedores)
- * Suporta múltiplos SGPs - cada cliente pode configurar suas próprias credenciais
+ * MCP Server para integração com o ERP SGP (Sistema de Gestão para Provedores).
+ * Cada sessão configura suas próprias credenciais via a tool `sgp_configurar`.
  *
- * Permite que assistentes de IA interajam com o SGP para:
- * - Consultar clientes, contratos e faturas
- * - Gerenciar chamados de suporte
- * - Controlar ordens de serviço
- * - Administrar rede FTTH (ONUs, OLTs, etc.)
- * - Gerenciar estoque
- * - Monitorar RADIUS
+ * As tools são geradas a partir da especificação canônica da API oficial do SGP
+ * (src/spec/sgp-endpoints.ts, derivada da collection oficial do Postman),
+ * garantindo conformidade com os endpoints reais.
  */
 
 // HTML da página de documentação
@@ -18,308 +14,184 @@ import indexHtml from './pages/index.html';
 
 import { McpAgent } from 'agents/mcp';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { SGPClient, SGPConfig } from './sgp-client';
+import { z } from 'zod';
+import { SGPClient, type SGPConfig } from './sgp-client';
+import { sgpTools } from './tools/factory';
+import { SGP_ENDPOINTS } from './spec/sgp-endpoints';
 
-// Importação das ferramentas
-import { clientesTools } from './tools/clientes';
-import { contratosTools } from './tools/contratos';
-import { faturasTools } from './tools/faturas';
-import { chamadosTools } from './tools/chamados';
-import { ordensServicoTools } from './tools/ordens-servico';
-import { ftthTools } from './tools/ftth';
-import { estoqueTools } from './tools/estoque';
-import { radiusTools } from './tools/radius';
-import { remessaRetornoTools } from './tools/remessa-retorno';
-import { termosTools } from './tools/termos';
-import { uraTools } from './tools/ura';
-import { preCadastrosTools } from './tools/pre-cadastros';
-import { outrosTools } from './tools/outros';
-import { centralAssinanteTools } from './tools/central-assinante';
-
-// Interface de ambiente
+// Bindings do Worker
 interface Env {
-  // Não requer variáveis fixas - credenciais são passadas por parâmetro
+  MCP_OBJECT: DurableObjectNamespace;
 }
 
-// Todas as ferramentas combinadas
-const allTools = [
-  ...clientesTools,
-  ...contratosTools,
-  ...faturasTools,
-  ...chamadosTools,
-  ...ordensServicoTools,
-  ...ftthTools,
-  ...estoqueTools,
-  ...radiusTools,
-  ...remessaRetornoTools,
-  ...termosTools,
-  ...uraTools,
-  ...preCadastrosTools,
-  ...outrosTools,
-  ...centralAssinanteTools
-];
+// Todas as ferramentas derivadas do spec (uma por endpoint real do SGP)
+const allTools = sgpTools;
 
-// Schema para configuração de credenciais
+// Seções da API (para documentação)
+const SECTIONS = Array.from(new Set(SGP_ENDPOINTS.map((e) => e.section)));
+
+// Schema (JSON, para a página /tools) da configuração de credenciais
 const configSchema = {
   type: 'object',
   properties: {
-    sgp_url: {
-      type: 'string',
-      description: 'URL base da API do SGP (ex: https://seuprovedor.sgp.net.br/api)'
-    },
-    auth_type: {
-      type: 'string',
-      enum: ['token', 'basic'],
-      description: 'Tipo de autenticação: token ou basic'
-    },
-    token: {
-      type: 'string',
-      description: 'Token de API (se auth_type=token)'
-    },
-    app: {
-      type: 'string',
-      description: 'Nome do aplicativo no SGP (se auth_type=token)'
-    },
-    username: {
-      type: 'string',
-      description: 'Usuário (se auth_type=basic)'
-    },
-    password: {
-      type: 'string',
-      description: 'Senha (se auth_type=basic)'
-    }
+    sgp_url: { type: 'string', description: 'URL base do provedor (ex: https://seuprovedor.sgp.net.br). O prefixo /api é adicionado automaticamente.' },
+    auth_type: { type: 'string', enum: ['token', 'basic'], description: 'Tipo de autenticação: token (recomendado) ou basic' },
+    token: { type: 'string', description: 'Token de API gerado no SGP em Sistema → Ferramentas → Painel Admin → Tokens (se auth_type=token)' },
+    app: { type: 'string', description: 'Nome do aplicativo associado ao token no SGP (se auth_type=token)' },
+    username: { type: 'string', description: 'Usuário do SGP (se auth_type=basic)' },
+    password: { type: 'string', description: 'Senha do SGP (se auth_type=basic)' }
   },
   required: ['sgp_url', 'auth_type']
 };
 
-// Cache de clientes SGP por sessão
-const clientCache = new Map<string, SGPClient>();
+// Zod shape correspondente (para registro no MCP SDK)
+const configShape = {
+  sgp_url: z.string().describe('URL base do provedor (ex: https://seuprovedor.sgp.net.br). O prefixo /api é adicionado automaticamente.'),
+  auth_type: z.enum(['token', 'basic']).describe('Tipo de autenticação: token (recomendado) ou basic'),
+  token: z.string().optional().describe('Token de API (se auth_type=token)'),
+  app: z.string().optional().describe('Nome do aplicativo associado ao token (se auth_type=token)'),
+  username: z.string().optional().describe('Usuário do SGP (se auth_type=basic)'),
+  password: z.string().optional().describe('Senha do SGP (se auth_type=basic)')
+};
 
-// Classe do MCP Agent
-export class SGPMcpAgent extends McpAgent {
-  server = new McpServer({
-    name: 'SGP MCP Server',
-    version: '1.0.0'
-  });
+/**
+ * Durable Object MCP: uma instância por sessão MCP.
+ * Mantém a configuração SGP da sessão em memória de instância.
+ */
+export class SGPMcpAgent extends McpAgent<Env> {
+  server = new McpServer({ name: 'SGP MCP Server', version: '2.0.0' });
 
   private currentConfig: SGPConfig | null = null;
-  private sessionId: string;
+  private client: SGPClient | null = null;
 
-  constructor() {
-    super();
-    this.sessionId = crypto.randomUUID();
+  private buildConfig(params: Record<string, unknown>): SGPConfig {
+    return {
+      baseUrl: params.sgp_url as string,
+      authType: (params.auth_type as 'basic' | 'token') || 'token',
+      token: params.token as string | undefined,
+      app: params.app as string | undefined,
+      username: params.username as string | undefined,
+      password: params.password as string | undefined
+    };
   }
 
-  private getSGPClient(params?: Record<string, unknown>): SGPClient {
-    // Se params contém credenciais, usa elas
-    if (params?.sgp_url) {
-      const config: SGPConfig = {
-        baseUrl: params.sgp_url as string,
-        authType: (params.auth_type as 'basic' | 'token') || 'token',
-        token: params.token as string,
-        app: params.app as string,
-        username: params.username as string,
-        password: params.password as string
-      };
-      this.currentConfig = config;
-      const client = new SGPClient(config);
-      clientCache.set(this.sessionId, client);
-      return client;
-    }
-
-    // Se já tem configuração na sessão, usa ela
-    if (clientCache.has(this.sessionId)) {
-      return clientCache.get(this.sessionId)!;
-    }
-
-    // Se tem configuração atual
+  private getClient(): SGPClient {
+    if (this.client) return this.client;
     if (this.currentConfig) {
-      return new SGPClient(this.currentConfig);
+      this.client = new SGPClient(this.currentConfig);
+      return this.client;
     }
-
     throw new Error('SGP não configurado. Use a ferramenta sgp_configurar primeiro para definir as credenciais.');
   }
 
   async init() {
-    // Ferramenta de configuração (primeira a ser chamada)
+    // Tool de configuração (primeira a ser chamada)
     this.server.tool(
       'sgp_configurar',
-      'Configura as credenciais de acesso ao SGP. DEVE ser chamada primeiro antes de usar outras ferramentas. Cada provedor tem sua própria URL e credenciais.',
-      configSchema,
-      async (params: Record<string, unknown>) => {
-        try {
-          const client = this.getSGPClient(params);
-
-          // Testa a conexão
-          const testResponse = await client.get('/status');
-
-          return {
-            content: [
-              {
-                type: 'text' as const,
-                text: JSON.stringify({
-                  status: 'success',
-                  message: 'SGP configurado com sucesso!',
-                  sgp_url: params.sgp_url,
-                  auth_type: params.auth_type,
-                  connection_test: testResponse
-                }, null, 2)
-              }
-            ]
-          };
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-
-          // Mesmo com erro no teste, salva a configuração
-          if (params.sgp_url) {
-            const config: SGPConfig = {
-              baseUrl: params.sgp_url as string,
-              authType: (params.auth_type as 'basic' | 'token') || 'token',
-              token: params.token as string,
-              app: params.app as string,
-              username: params.username as string,
-              password: params.password as string
-            };
-            this.currentConfig = config;
-            clientCache.set(this.sessionId, new SGPClient(config));
-          }
-
-          return {
-            content: [
-              {
-                type: 'text' as const,
-                text: JSON.stringify({
-                  status: 'warning',
-                  message: 'Credenciais salvas, mas não foi possível testar a conexão.',
-                  error: errorMessage,
-                  sgp_url: params.sgp_url,
-                  auth_type: params.auth_type
-                }, null, 2)
-              }
-            ]
-          };
-        }
+      'Configura as credenciais de acesso ao SGP. DEVE ser chamada primeiro antes de usar outras ferramentas.',
+      configShape,
+      async (params) => {
+        const config = this.buildConfig(params as Record<string, unknown>);
+        this.currentConfig = config;
+        this.client = new SGPClient(config);
+        return {
+          content: [{
+            type: 'text' as const,
+            text: JSON.stringify({
+              status: 'success',
+              message: 'SGP configurado com sucesso para esta sessão.',
+              sgp_url: config.baseUrl,
+              auth_type: config.authType,
+              tools_disponiveis: allTools.length,
+              proximo_passo: 'Use sgp_status_conexao para validar, ou chame qualquer tool sgp_*.'
+            }, null, 2)
+          }]
+        };
       }
     );
 
-    // Ferramenta para verificar configuração atual
+    // Tool de status/diagnóstico (probe em endpoint real)
     this.server.tool(
       'sgp_status_conexao',
-      'Verifica se o SGP está configurado e testa a conexão.',
-      {
-        type: 'object',
-        properties: {}
-      },
+      'Verifica se o SGP está configurado nesta sessão e testa a conexão consultando um endpoint real (Portador – Listar).',
+      {},
       async () => {
-        if (!this.currentConfig && !clientCache.has(this.sessionId)) {
+        if (!this.currentConfig) {
           return {
-            content: [
-              {
-                type: 'text' as const,
-                text: JSON.stringify({
-                  status: 'not_configured',
-                  message: 'SGP não configurado. Use sgp_configurar primeiro.',
-                  instructions: {
-                    tool: 'sgp_configurar',
-                    required_params: ['sgp_url', 'auth_type'],
-                    optional_params_token: ['token', 'app'],
-                    optional_params_basic: ['username', 'password']
-                  }
-                }, null, 2)
-              }
-            ]
+            content: [{
+              type: 'text' as const,
+              text: JSON.stringify({
+                status: 'not_configured',
+                message: 'SGP não configurado. Use sgp_configurar primeiro.',
+                instructions: {
+                  tool: 'sgp_configurar',
+                  required_params: ['sgp_url', 'auth_type'],
+                  optional_params_token: ['token', 'app'],
+                  optional_params_basic: ['username', 'password']
+                }
+              }, null, 2)
+            }]
           };
         }
-
         try {
-          const client = this.getSGPClient();
-          const response = await client.get('/status');
+          const client = this.getClient();
+          const probe = SGP_ENDPOINTS.find((e) => e.id === 'sgp_ura_portador_listar');
+          const result = probe ? await client.request(probe) : null;
           return {
-            content: [
-              {
-                type: 'text' as const,
-                text: JSON.stringify({
-                  status: 'connected',
-                  sgp_url: this.currentConfig?.baseUrl,
-                  auth_type: this.currentConfig?.authType,
-                  api_status: response
-                }, null, 2)
-              }
-            ]
+            content: [{
+              type: 'text' as const,
+              text: JSON.stringify({
+                status: result?.ok ? 'connected' : 'config_saved',
+                sgp_url: this.currentConfig.baseUrl,
+                auth_type: this.currentConfig.authType,
+                probe_endpoint: probe?.path,
+                http_status: result?.status,
+                api_response: result?.data
+              }, null, 2)
+            }]
           };
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+          const message = error instanceof Error ? error.message : 'Erro desconhecido';
           return {
-            content: [
-              {
-                type: 'text' as const,
-                text: JSON.stringify({
-                  status: 'error',
-                  sgp_url: this.currentConfig?.baseUrl,
-                  error: errorMessage
-                }, null, 2)
-              }
-            ],
+            content: [{ type: 'text' as const, text: JSON.stringify({ status: 'error', sgp_url: this.currentConfig.baseUrl, error: message }, null, 2) }],
             isError: true
           };
         }
       }
     );
 
-    // Registra todas as outras ferramentas
+    // Registra todas as tools derivadas do spec
     for (const tool of allTools) {
       this.server.tool(
         tool.name,
         tool.description,
-        tool.inputSchema,
-        async (params: Record<string, unknown>) => {
+        tool.inputShape,
+        async (args) => {
           try {
-            const client = this.getSGPClient(params);
-            const result = await tool.handler(client, params as never);
+            const client = this.getClient();
+            const result = await client.request(tool.endpoint, args as Record<string, string | number | boolean | null | undefined>);
             return {
-              content: [
-                {
-                  type: 'text' as const,
-                  text: JSON.stringify(result, null, 2)
-                }
-              ]
+              content: [{ type: 'text' as const, text: JSON.stringify(result.data, null, 2) }],
+              isError: !result.ok
             };
           } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-
-            // Verifica se é erro de configuração
-            if (errorMessage.includes('não configurado')) {
+            const message = error instanceof Error ? error.message : 'Erro desconhecido';
+            if (message.includes('não configurado')) {
               return {
-                content: [
-                  {
-                    type: 'text' as const,
-                    text: JSON.stringify({
-                      status: 'error',
-                      message: errorMessage,
-                      instructions: 'Use a ferramenta sgp_configurar primeiro para definir as credenciais do SGP.',
-                      example: {
-                        sgp_url: 'https://seuprovedor.sgp.net.br/api',
-                        auth_type: 'token',
-                        token: 'seu_token_aqui',
-                        app: 'nome_do_app'
-                      }
-                    }, null, 2)
-                  }
-                ],
-                isError: true
-              };
-            }
-
-            return {
-              content: [
-                {
+                content: [{
                   type: 'text' as const,
                   text: JSON.stringify({
                     status: 'error',
-                    message: `Erro ao executar ${tool.name}: ${errorMessage}`
+                    message,
+                    instructions: 'Use a ferramenta sgp_configurar primeiro para definir as credenciais do SGP.',
+                    example: { sgp_url: 'https://seuprovedor.sgp.net.br', auth_type: 'token', token: 'seu_token_aqui', app: 'nome_do_app' }
                   }, null, 2)
-                }
-              ],
+                }],
+                isError: true
+              };
+            }
+            return {
+              content: [{ type: 'text' as const, text: JSON.stringify({ status: 'error', message: `Erro ao executar ${tool.name}: ${message}` }, null, 2) }],
               isError: true
             };
           }
@@ -327,165 +199,78 @@ export class SGPMcpAgent extends McpAgent {
       );
     }
 
-    // Registra recursos informativos
-    this.server.resource(
-      'sgp://info/api',
-      'Informações da API do SGP',
-      async () => ({
-        contents: [
-          {
-            uri: 'sgp://info/api',
-            mimeType: 'application/json',
-            text: JSON.stringify({
-              name: 'SGP MCP Server - Multi-Tenant',
-              version: '1.0.0',
-              description: 'MCP Server para integração com múltiplos SGPs',
-              setup: {
-                step1: 'Use sgp_configurar para definir as credenciais',
-                step2: 'Depois use as outras ferramentas normalmente'
-              },
-              auth_options: {
-                token: 'Autenticação por token (recomendado)',
-                basic: 'Autenticação básica (usuário/senha)'
-              },
-              categories: [
-                'Clientes/Assinantes',
-                'Contratos',
-                'Faturas e Boletos',
-                'Chamados de Suporte',
-                'Ordens de Serviço',
-                'FTTH (ONUs, OLTs, Caixas, Splitters)',
-                'Estoque',
-                'RADIUS',
-                'Remessa/Retorno Bancário',
-                'Termos de Aceite',
-                'URA (Atendimento Automático)',
-                'Pré-Cadastros (Leads)',
-                'Central do Assinante (Autoatendimento)',
-                'Localização, Logs, Notificações, Configurações e Relatórios'
-              ],
-              totalTools: allTools.length + 2 // +2 para sgp_configurar e sgp_status_conexao
-            }, null, 2)
-          }
-        ]
-      })
-    );
+    // Recurso informativo da API
+    this.server.resource('sgp-info-api', 'sgp://info/api', async (uri) => ({
+      contents: [{
+        uri: uri.href,
+        mimeType: 'application/json',
+        text: JSON.stringify({
+          name: 'SGP MCP Server - Multi-Tenant',
+          version: '2.0.0',
+          description: 'MCP Server para integração com múltiplos SGPs, gerado a partir da API oficial.',
+          setup: { step1: 'Use sgp_configurar para definir as credenciais', step2: 'Use sgp_status_conexao para validar', step3: 'Chame qualquer tool sgp_*' },
+          auth_options: { token: 'Autenticação por token + app (recomendado)', basic: 'Autenticação básica (usuário/senha)' },
+          sections: SECTIONS,
+          totalTools: allTools.length + 2
+        }, null, 2)
+      }]
+    }));
 
-    this.server.resource(
-      'sgp://info/tools',
-      'Lista de ferramentas disponíveis',
-      async () => ({
-        contents: [
-          {
-            uri: 'sgp://info/tools',
-            mimeType: 'application/json',
-            text: JSON.stringify([
-              {
-                name: 'sgp_configurar',
-                description: 'Configura as credenciais do SGP (CHAMAR PRIMEIRO)'
-              },
-              {
-                name: 'sgp_status_conexao',
-                description: 'Verifica status da conexão com o SGP'
-              },
-              ...allTools.map(t => ({
-                name: t.name,
-                description: t.description
-              }))
-            ], null, 2)
-          }
-        ]
-      })
-    );
+    // Recurso com a lista de tools
+    this.server.resource('sgp-info-tools', 'sgp://info/tools', async (uri) => ({
+      contents: [{
+        uri: uri.href,
+        mimeType: 'application/json',
+        text: JSON.stringify([
+          { name: 'sgp_configurar', description: 'Configura as credenciais do SGP (CHAMAR PRIMEIRO)' },
+          { name: 'sgp_status_conexao', description: 'Verifica status da conexão com o SGP' },
+          ...allTools.map((t) => ({ name: t.name, description: t.description }))
+        ], null, 2)
+      }]
+    }));
   }
 }
+
+// Handlers de transporte MCP (Streamable HTTP e SSE)
+const mcpHandler = SGPMcpAgent.serve('/mcp');
+const sseHandler = SGPMcpAgent.serveSSE('/sse');
 
 // Export para Cloudflare Workers
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
-    // Página principal - Documentação e Playground
     if (url.pathname === '/') {
-      return new Response(indexHtml, {
-        headers: { 'Content-Type': 'text/html; charset=utf-8' }
-      });
+      return new Response(indexHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
     }
 
-    // Health check (JSON)
     if (url.pathname === '/health') {
       return new Response(JSON.stringify({
         status: 'ok',
         server: 'SGP MCP Server (Multi-Tenant)',
-        version: '1.0.0',
-        description: 'MCP Server para integração com múltiplos SGPs de diferentes provedores',
+        version: '2.0.0',
         tools: allTools.length + 2,
-        endpoints: {
-          docs: '/',
-          health: '/health',
-          tools: '/tools',
-          mcp: '/mcp',
-          sse: '/sse'
-        },
+        sections: SECTIONS,
+        endpoints: { docs: '/', health: '/health', tools: '/tools', mcp: '/mcp', sse: '/sse' },
         setup: 'Use a ferramenta sgp_configurar para definir as credenciais do SGP antes de usar outras ferramentas'
-      }, null, 2), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      }, null, 2), { headers: { 'Content-Type': 'application/json' } });
     }
 
-    // Lista de ferramentas (JSON)
     if (url.pathname === '/tools') {
       return new Response(JSON.stringify({
         setup_tools: [
-          {
-            name: 'sgp_configurar',
-            description: 'Configura as credenciais do SGP - DEVE ser chamada primeiro',
-            inputSchema: configSchema
-          },
-          {
-            name: 'sgp_status_conexao',
-            description: 'Verifica se o SGP está configurado e testa a conexão'
-          }
+          { name: 'sgp_configurar', description: 'Configura as credenciais do SGP - DEVE ser chamada primeiro', inputSchema: configSchema },
+          { name: 'sgp_status_conexao', description: 'Verifica se o SGP está configurado e testa a conexão' }
         ],
-        sgp_tools: allTools.map(t => ({
-          name: t.name,
-          description: t.description,
-          inputSchema: t.inputSchema
-        }))
-      }, null, 2), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+        sgp_tools: allTools.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema }))
+      }, null, 2), { headers: { 'Content-Type': 'application/json' } });
     }
 
-    // API de teste para o playground
-    if (url.pathname === '/api/test' && request.method === 'POST') {
-      try {
-        const body = await request.json() as { tool: string; params: Record<string, unknown> };
-        return new Response(JSON.stringify({
-          status: 'info',
-          message: 'Este endpoint é apenas para demonstração do playground.',
-          note: 'Para executar as ferramentas de verdade, conecte um cliente MCP ao endpoint /sse',
-          tool_received: body.tool,
-          params_received: body.params
-        }, null, 2), {
-          headers: { 'Content-Type': 'application/json' }
-        });
-      } catch {
-        return new Response(JSON.stringify({
-          status: 'error',
-          message: 'Erro ao processar requisição'
-        }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
+    if (url.pathname === '/mcp') {
+      return mcpHandler.fetch(request, env, ctx);
     }
-
-    // MCP endpoints (streamable HTTP e SSE)
-    if (url.pathname === '/mcp' || url.pathname === '/sse') {
-      const agent = new SGPMcpAgent();
-      await agent.init();
-      return agent.fetch(request, env, ctx);
+    if (url.pathname === '/sse' || url.pathname === '/sse/message') {
+      return sseHandler.fetch(request, env, ctx);
     }
 
     return new Response('Not Found', { status: 404 });
