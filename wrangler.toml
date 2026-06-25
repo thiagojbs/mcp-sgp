@@ -23,3 +23,12 @@ SGP_API_URL = "https://demo.sgp.net.br/api"
 # Observabilidade
 [observability]
 enabled = true
+
+# Durable Object que hospeda o agente MCP (uma instância por sessão)
+[[durable_objects.bindings]]
+name = "MCP_OBJECT"
+class_name = "SGPMcpAgent"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SGPMcpAgent"]
